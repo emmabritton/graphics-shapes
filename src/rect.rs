@@ -1,7 +1,10 @@
+use std::ops::Div;
 use crate::coord::Coord;
 use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
+use crate::circle::Circle;
+use crate::polygon::Polygon;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -104,5 +107,19 @@ impl Shape for Rect {
 
     fn bottom(&self) -> isize {
         self.top_left.y.max(self.bottom_right.y)
+    }
+}
+
+impl Rect {
+    /// Create a circle around the center to the closest edge
+    pub fn as_smallest_circle(&self) -> Circle {
+        let radius = self.width().div(2).min(self.height().div(2));
+        Circle::new(self.center(), radius)
+    }
+
+    /// Create a circle around the center to the farthest edge
+    pub fn as_biggest_circle(&self) -> Circle {
+        let radius = self.width().div(2).max(self.height().div(2));
+        Circle::new(self.center(), radius)
     }
 }

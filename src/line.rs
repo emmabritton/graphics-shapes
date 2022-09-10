@@ -2,6 +2,8 @@ use crate::coord::Coord;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
+use crate::circle::Circle;
+use crate::rect::Rect;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
@@ -123,5 +125,15 @@ impl Shape for Line {
     #[inline]
     fn bottom(&self) -> isize {
         self.end.y
+    }
+}
+
+impl Line {
+    pub fn as_rect(&self) -> Rect {
+        Rect::new(self.start, self.end)
+    }
+
+    pub fn as_circle(&self) -> Circle {
+        Circle::new(self.start, self.start.distance(self.end))
     }
 }

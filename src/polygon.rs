@@ -105,20 +105,24 @@ impl Shape for Polygon {
 }
 
 impl Polygon {
+    /// Creates a circle using the point closest to the center
     pub fn as_inner_circle(&self) -> Circle {
         Circle::from_points(vec![self.center, self.point_closest_to_center()])
     }
 
+    /// Creates a circle using the point farthest to the center
     pub fn as_outer_circle(&self) -> Circle {
         Circle::from_points(vec![self.center, self.point_farthest_from_center()])
     }
 
+    /// Creates a circle using the average point distance from the center
     pub fn as_avg_circle(&self) -> Circle {
         let total: usize = self.points.iter().map(|p| p.distance(self.center)).sum();
         let radius = total / self.points.len();
         Circle::new(self.center, radius)
     }
 
+    /// If the polygon is regular then it returns a circle from center to the first point
     pub fn as_circle(&self) -> Option<Circle> {
         if self.is_regular {
             Some(Circle::from_points(vec![self.center, self.points[0]]))
@@ -131,6 +135,7 @@ impl Polygon {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
+    /// Cuts shape into triangles, triangles will be from the center to the edge
     pub fn as_triangles(&self) -> Vec<Triangle> {
         let mut output = vec![];
         for coords in self.points.windows(2) {

@@ -1,6 +1,7 @@
 use crate::{Coord, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
+use crate::rect::Rect;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
@@ -124,5 +125,11 @@ impl Shape for Triangle {
     #[inline]
     fn center(&self) -> Coord {
         self.center
+    }
+}
+
+impl Triangle {
+    pub fn as_rect(&self) -> Rect {
+        Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 }
