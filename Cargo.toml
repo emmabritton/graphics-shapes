@@ -1,0 +1,20 @@
+[package]
+name = "graphics-shapes"
+version = "0.1.0"
+edition = "2021"
+authors = ["Ray Britton <raybritton@pm.me>"]
+description = "Shapes for graphics"
+license-file = "LICENSE"
+repository = "https://github.com/raybritton/graphics-shapes"
+readme = "README.md"
+homepage = "https://github.com/raybritton/graphics-shapes"
+keywords = ["shapes", "simple", "graphics"]
+categories = ["math", "graphics"]
+
+[features]
+mint = ["dep:mint"]
+serde = ["dep:serde"]
+
+[dependencies]
+mint = { version = "0.5.9", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
