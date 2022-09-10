@@ -4,6 +4,7 @@ use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
+use crate::triangle::Triangle;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -120,5 +121,14 @@ impl Rect {
     pub fn as_biggest_circle(&self) -> Circle {
         let radius = self.width().div(2).max(self.height().div(2));
         Circle::new(self.center(), radius)
+    }
+
+    pub fn as_triangles(&self) -> (Triangle, Triangle) {
+        let top_right = (self.right(), self.top()).into();
+        let bottom_left = (self.left(), self.bottom()).into();
+        (
+            Triangle::new(self.top_left(), top_right, bottom_left),
+            Triangle::new(self.bottom_right(), top_right, bottom_left)
+        )
     }
 }

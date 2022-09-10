@@ -136,7 +136,11 @@ impl Polygon {
     }
 
     /// Cuts shape into triangles, triangles will be from the center to the edge
-    pub fn as_triangles(&self) -> Vec<Triangle> {
+    /// This only works on convex polygons
+    pub fn as_triangles(&self) -> Option<Vec<Triangle>> {
+        if !self.is_convex {
+            return None;
+        }
         let mut output = vec![];
         for coords in self.points.windows(2) {
             output.push(Triangle::new(coords[0], coords[1], self.center));
@@ -147,7 +151,7 @@ impl Polygon {
             self.center,
         ));
 
-        output
+        Some(output)
     }
 }
 
