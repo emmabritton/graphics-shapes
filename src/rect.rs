@@ -40,14 +40,17 @@ impl Rect {
         (self.bottom_right.y - self.top_left.y).unsigned_abs()
     }
 
+    #[inline]
     pub fn top_left(&self) -> Coord {
         self.top_left
     }
 
+    #[inline]
     pub fn bottom_right(&self) -> Coord {
         self.bottom_right
     }
 
+    #[inline]
     pub fn is_square(&self) -> bool {
         let diff = self.bottom_right - self.top_left;
         diff.x == diff.y

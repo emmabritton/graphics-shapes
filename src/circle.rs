@@ -23,6 +23,7 @@ impl Circle {
     /// Radius of circle
     ///
     /// Distance from center to edge
+    #[inline]
     pub fn radius(&self) -> usize {
         self.radius
     }
@@ -57,22 +58,27 @@ impl Shape for Circle {
         vec![self.center, Coord::from_angle(self.center, self.radius, 0)]
     }
 
+    #[inline]
     fn center(&self) -> Coord {
         self.center
     }
 
+    #[inline]
     fn left(&self) -> isize {
         self.center.x - (self.radius as isize)
     }
 
+    #[inline]
     fn right(&self) -> isize {
         self.center.x + (self.radius as isize)
     }
 
+    #[inline]
     fn top(&self) -> isize {
         self.center.y - (self.radius as isize)
     }
 
+    #[inline]
     fn bottom(&self) -> isize {
         self.center.y + (self.radius as isize)
     }

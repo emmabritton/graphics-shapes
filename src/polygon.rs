@@ -36,10 +36,12 @@ impl Polygon {
 }
 
 impl Polygon {
+    #[inline]
     pub fn fpoints(&self) -> &Vec<(f32, f32)> {
         &self.fpoints
     }
 
+    #[inline]
     pub fn is_regular(&self) -> bool {
         self.is_regular
     }
@@ -56,6 +58,7 @@ impl Polygon {
         *list.last().unwrap()
     }
 
+    #[inline]
     pub fn is_convex(&self) -> bool {
         self.is_convex
     }
@@ -95,6 +98,7 @@ impl Shape for Polygon {
         self.points.clone()
     }
 
+    #[inline]
     fn center(&self) -> Coord {
         self.center
     }

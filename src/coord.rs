@@ -63,10 +63,12 @@ impl Coord {
         self.x * rhs.x + self.y * rhs.y
     }
 
+    #[inline]
     pub fn perpendicular(self) -> Coord {
         Coord::new(self.y, -self.x)
     }
 
+    #[inline]
     pub fn abs(self) -> Coord {
         Coord {
             x: self.x.abs(),
@@ -78,6 +80,7 @@ impl Coord {
 impl<P: Into<Coord>> Add<P> for Coord {
     type Output = Coord;
 
+    #[inline]
     fn add(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -90,6 +93,7 @@ impl<P: Into<Coord>> Add<P> for Coord {
 impl Neg for Coord {
     type Output = Coord;
 
+    #[inline]
     fn neg(self) -> Self::Output {
         Coord {
             x: -self.x,
@@ -113,6 +117,7 @@ impl<P: Into<Coord>> Sub<P> for Coord {
 impl<P: Into<Coord>> Mul<P> for Coord {
     type Output = Coord;
 
+    #[inline]
     fn mul(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -145,6 +150,7 @@ impl From<Coord> for Point2<isize> {
 macro_rules! impl_from_num {
     ($num_type:ty) => {
         impl From<($num_type, $num_type)> for Coord {
+            #[inline]
             fn from(nums: ($num_type, $num_type)) -> Coord {
                 Coord {
                     x: nums.0 as isize,
@@ -156,6 +162,7 @@ macro_rules! impl_from_num {
         impl Add<$num_type> for Coord {
             type Output = Coord;
 
+            #[inline]
             fn add(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x + rhs as isize,
@@ -167,6 +174,7 @@ macro_rules! impl_from_num {
         impl Sub<$num_type> for Coord {
             type Output = Coord;
 
+            #[inline]
             fn sub(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x - rhs as isize,
@@ -178,6 +186,7 @@ macro_rules! impl_from_num {
         impl Mul<$num_type> for Coord {
             type Output = Coord;
 
+            #[inline]
             fn mul(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x * rhs as isize,

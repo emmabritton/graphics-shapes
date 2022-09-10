@@ -1,3 +1,21 @@
+//! Shapes for Graphics
+//!
+//! Provides shapes for simple graphics
+//!
+//! ```
+//! # use graphics_shapes::coord::Coord;
+//! # use graphics_shapes::rect::Rect;
+//! # use graphics_shapes::Shape;
+//! # use graphics_shapes::triangle::Triangle;
+//! let rect = Rect::new((10,10),(20,20));
+//! assert!(rect.contains((15,15)));
+//! let triangle = Triangle::new((34,5),(12,30),(9,10));
+//! let rotated = triangle.rotate(45);
+//!
+//! let start = Coord::new(20,130);
+//! let dist = start.distance((30,130));
+//!```
+
 #![deny(clippy::all)]
 
 use crate::coord::Coord;

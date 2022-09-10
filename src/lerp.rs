@@ -1,6 +1,12 @@
 use crate::Coord;
 
 pub trait Lerp {
+    /// calculate the point at `percent` between `self` and `end`
+    ///
+    /// e.g. 10.lerp(20, 0.5) returns 15 and
+    ///      10.lerp(20, 0.1) returns 11
+    ///
+    /// internally the values are cast as f32 and rounded before being returned
     fn lerp(self, end: Self, percent: f32) -> Self;
 }
 

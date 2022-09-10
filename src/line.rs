@@ -48,22 +48,27 @@ impl Line {
 
 impl Line {
     #[allow(clippy::len_without_is_empty)] //use start()==end() to check that
+    #[inline]
     pub fn len(&self) -> usize {
         self.len
     }
 
+    #[inline]
     pub fn angle(&self) -> isize {
         self.angle
     }
 
+    #[inline]
     pub fn start(&self) -> Coord {
         self.start
     }
 
+    #[inline]
     pub fn end(&self) -> Coord {
         self.end
     }
 
+    #[inline]
     pub fn line_type(&self) -> LineType {
         self.line_type
     }
@@ -100,18 +105,22 @@ impl Shape for Line {
         self.start.mid_point(self.end)
     }
 
+    #[inline]
     fn left(&self) -> isize {
         self.start.x
     }
 
+    #[inline]
     fn right(&self) -> isize {
         self.end.x
     }
 
+    #[inline]
     fn top(&self) -> isize {
         self.start.y
     }
 
+    #[inline]
     fn bottom(&self) -> isize {
         self.end.y
     }

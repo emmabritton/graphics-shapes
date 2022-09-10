@@ -121,6 +121,7 @@ impl Shape for Triangle {
         self.points.to_vec()
     }
 
+    #[inline]
     fn center(&self) -> Coord {
         self.center
     }
