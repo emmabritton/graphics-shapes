@@ -1,9 +1,9 @@
+use crate::circle::Circle;
 use crate::coord::Coord;
+use crate::rect::Rect;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
-use crate::circle::Circle;
-use crate::rect::Rect;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]

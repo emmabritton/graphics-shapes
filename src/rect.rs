@@ -1,10 +1,9 @@
-use std::ops::Div;
+use crate::circle::Circle;
 use crate::coord::Coord;
 use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
-use crate::circle::Circle;
-use crate::polygon::Polygon;
+use std::ops::Div;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
