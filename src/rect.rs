@@ -1,10 +1,10 @@
 use crate::circle::Circle;
 use crate::coord::Coord;
+use crate::triangle::Triangle;
 use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
-use crate::triangle::Triangle;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -124,11 +124,11 @@ impl Rect {
     }
 
     pub fn as_triangles(&self) -> (Triangle, Triangle) {
-        let top_right = (self.right(), self.top()).into();
-        let bottom_left = (self.left(), self.bottom()).into();
+        let top_right = Coord::new(self.right(), self.top());
+        let bottom_left = Coord::new(self.left(), self.bottom());
         (
             Triangle::new(self.top_left(), top_right, bottom_left),
-            Triangle::new(self.bottom_right(), top_right, bottom_left)
+            Triangle::new(self.bottom_right(), top_right, bottom_left),
         )
     }
 }
