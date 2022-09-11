@@ -145,19 +145,25 @@ mod test {
 
     #[test]
     fn len() {
-        assert_eq!(Line::new((10,10), (20,10)).len, 10);
-        assert_eq!(Line::new((10,10), (10,20)).len, 10);
-        assert_eq!(Line::new((10,10), (0,10)).len, 10);
-        assert_eq!(Line::new((10,10), (10,0)).len, 10);
-        assert_eq!(Line::new((10,10), (0,0)).len, 14);
-        assert_eq!(Line::new((10,10), (20,20)).len, 14);
-        assert_eq!(Line::new((10,10), (0,20)).len, 14);
-        assert_eq!(Line::new((10,10), (20,0)).len, 14);
+        assert_eq!(Line::new((10, 10), (20, 10)).len, 10);
+        assert_eq!(Line::new((10, 10), (10, 20)).len, 10);
+        assert_eq!(Line::new((10, 10), (0, 10)).len, 10);
+        assert_eq!(Line::new((10, 10), (10, 0)).len, 10);
+        assert_eq!(Line::new((10, 10), (0, 0)).len, 14);
+        assert_eq!(Line::new((10, 10), (20, 20)).len, 14);
+        assert_eq!(Line::new((10, 10), (0, 20)).len, 14);
+        assert_eq!(Line::new((10, 10), (20, 0)).len, 14);
     }
 
     #[test]
     fn rotate_center() {
-        assert_eq!(Line::new((10,10),(20,10)).rotate(90), Line::new((15,5), (15,15)));
-        assert_eq!(Line::new((10,10),(20,10)).rotate(25), Line::new((10,8), (20,12)));
+        assert_eq!(
+            Line::new((10, 10), (20, 10)).rotate(90),
+            Line::new((15, 5), (15, 15))
+        );
+        assert_eq!(
+            Line::new((10, 10), (20, 10)).rotate(25),
+            Line::new((10, 8), (20, 12))
+        );
     }
 }

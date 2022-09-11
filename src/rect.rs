@@ -1,11 +1,11 @@
 use crate::circle::Circle;
 use crate::coord::Coord;
+use crate::polygon::Polygon;
 use crate::triangle::Triangle;
 use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
-use crate::polygon::Polygon;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -136,6 +136,11 @@ impl Rect {
     pub fn as_polygon(&self) -> Polygon {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
-        Polygon::new(vec![self.top_left, top_right, self.bottom_right, bottom_left])
+        Polygon::new(vec![
+            self.top_left,
+            top_right,
+            self.bottom_right,
+            bottom_left,
+        ])
     }
 }

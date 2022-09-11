@@ -295,12 +295,12 @@ mod test {
 
         #[test]
         fn angle() {
-            let center = Coord::new(20,20);
+            let center = Coord::new(20, 20);
 
-            assert_eq!(center.angle_to((30,20)), 0);
-            assert_eq!(center.angle_to((20,30)), 90);
-            assert_eq!(center.angle_to((10,20)), 180);
-            assert_eq!(center.angle_to((20,10)), -90);
+            assert_eq!(center.angle_to((30, 20)), 0);
+            assert_eq!(center.angle_to((20, 30)), 90);
+            assert_eq!(center.angle_to((10, 20)), 180);
+            assert_eq!(center.angle_to((20, 10)), -90);
         }
 
         #[test]
@@ -314,8 +314,8 @@ mod test {
     }
 
     mod ops {
-        use std::ops::{Add, Mul, Neg, Sub};
         use crate::Coord;
+        use std::ops::{Add, Mul, Neg, Sub};
 
         #[test]
         fn simple() {
