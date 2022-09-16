@@ -1,12 +1,12 @@
 use crate::circle::Circle;
 use crate::coord::Coord;
+use crate::ellipse::Ellipse;
 use crate::polygon::Polygon;
 use crate::triangle::Triangle;
 use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
-use crate::ellipse::Ellipse;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]

@@ -1,10 +1,10 @@
 use crate::coord::Coord;
+use crate::ellipse::Ellipse;
 use crate::line::Line;
 use crate::rect::Rect;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
-use crate::ellipse::Ellipse;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -35,8 +35,8 @@ impl Circle {
 impl Shape for Circle {
     /// must be [center, edge]
     fn from_points(points: Vec<Coord>) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         debug_assert!(points.len() >= 2);
         let radius = points[0].distance(points[1]);

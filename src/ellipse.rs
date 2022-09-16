@@ -1,10 +1,10 @@
+use crate::circle::Circle;
 use crate::coord::Coord;
 use crate::line::Line;
 use crate::rect::Rect;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
-use crate::circle::Circle;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -39,8 +39,8 @@ impl Ellipse {
 impl Shape for Ellipse {
     /// must be [top_left, bottom_right]
     fn from_points(points: Vec<Coord>) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         debug_assert!(points.len() >= 2);
         let width = points[1].x - points[0].x;
@@ -59,12 +59,17 @@ impl Shape for Ellipse {
 
     fn contains<P: Into<Coord>>(&self, point: P) -> bool {
         let point = point.into();
-        (point.x - self.center.x) ^ 2 / (self.width as isize) ^ 2 + (point.y - self.center.y) ^ 2 / (self.height as isize) ^ 2 <= 1
+        ((point.x - self.center.x) ^ 2) / ((self.width as isize) ^ 2)
+            + ((point.y - self.center.y) ^ 2) / ((self.height as isize) ^ 2)
+            <= 1
     }
 
     /// Returns [top_left, bottom_right]
     fn points(&self) -> Vec<Coord> {
-        vec![Coord::new(self.left(), self.top()), Coord::new(self.right(), self.bottom())]
+        vec![
+            Coord::new(self.left(), self.top()),
+            Coord::new(self.right(), self.bottom()),
+        ]
     }
 
     #[inline]
@@ -108,7 +113,10 @@ impl Ellipse {
 
     /// Create line from center to right edge at 0 degrees
     pub fn as_radius_line(&self) -> Line {
-        Line::new((self.center.x, self.center.y), (self.right(), self.center.y))
+        Line::new(
+            (self.center.x, self.center.y),
+            (self.right(), self.center.y),
+        )
     }
 
     pub fn as_circle(&self) -> Option<Circle> {

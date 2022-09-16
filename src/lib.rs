@@ -23,13 +23,13 @@ use crate::general_math::{rotate_points, scale_points};
 
 pub mod circle;
 pub mod coord;
+pub mod ellipse;
 mod general_math;
 pub mod lerp;
 pub mod line;
 pub mod polygon;
 pub mod rect;
 pub mod triangle;
-pub mod ellipse;
 
 pub trait Shape {
     /// create this shape from a list of points
