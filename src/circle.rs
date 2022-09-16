@@ -4,6 +4,7 @@ use crate::rect::Rect;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
+use crate::ellipse::Ellipse;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -34,8 +35,8 @@ impl Circle {
 impl Shape for Circle {
     /// must be [center, edge]
     fn from_points(points: Vec<Coord>) -> Self
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
         debug_assert!(points.len() >= 2);
         let radius = points[0].distance(points[1]);
@@ -92,7 +93,19 @@ impl Circle {
     }
 
     /// Create line from center to edge at 0 degrees
-    pub fn as_line(&self) -> Line {
+    pub fn as_radius_line(&self) -> Line {
         Line::from_points(self.points())
+    }
+
+    pub fn as_horizontal_line(&self) -> Line {
+        Line::new((self.left(), self.center.y), (self.right(), self.center.y))
+    }
+
+    pub fn as_vertical_line(&self) -> Line {
+        Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
+    }
+
+    pub fn as_ellipse(&self) -> Ellipse {
+        Ellipse::new(self.center, self.radius * 2, self.radius * 2)
     }
 }

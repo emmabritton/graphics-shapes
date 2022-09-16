@@ -29,6 +29,7 @@ pub mod line;
 pub mod polygon;
 pub mod rect;
 pub mod triangle;
+pub mod ellipse;
 
 pub trait Shape {
     /// create this shape from a list of points

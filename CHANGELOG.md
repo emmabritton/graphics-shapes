@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.3
+- Add Ellipse
+
 ### Version 0.1.2
 - Add Rect::as_polygon()
 
