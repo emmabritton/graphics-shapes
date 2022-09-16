@@ -6,6 +6,7 @@ use crate::{rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
+use crate::ellipse::Ellipse;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -142,5 +143,9 @@ impl Rect {
             self.bottom_right,
             bottom_left,
         ])
+    }
+
+    pub fn as_ellipse(&self) -> Ellipse {
+        Ellipse::from_points(self.points())
     }
 }
