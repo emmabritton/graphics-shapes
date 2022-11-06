@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.4
+- Make several methods const
+
 ### Version 0.1.3
 - Add Ellipse
 

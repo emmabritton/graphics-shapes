@@ -13,7 +13,7 @@ pub struct Coord {
 
 impl Coord {
     #[inline]
-    pub fn new(x: isize, y: isize) -> Self {
+    pub const fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }
 
@@ -64,12 +64,12 @@ impl Coord {
     }
 
     #[inline]
-    pub fn perpendicular(self) -> Coord {
+    pub const fn perpendicular(self) -> Coord {
         Coord::new(self.y, -self.x)
     }
 
     #[inline]
-    pub fn abs(self) -> Coord {
+    pub const fn abs(self) -> Coord {
         Coord {
             x: self.x.abs(),
             y: self.y.abs(),
