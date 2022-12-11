@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.5
+- Add Triangle::right_angle and Triangle::equilateral constructor methods
+
 ### Version 0.1.4
 - Make several methods const
 
