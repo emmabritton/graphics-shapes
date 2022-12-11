@@ -128,8 +128,64 @@ impl Shape for Triangle {
     }
 }
 
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub enum AnglePosition {
+    TopLeft,
+    TopRight,
+    BottomRight,
+    BottomLeft,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum FlatSide {
+    Top,
+    Bottom,
+    Left,
+    Right,
+}
+
 impl Triangle {
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
+    }
+
+    pub fn right_angle<P: Into<Coord>>(
+        angle_coord: P,
+        width: usize,
+        height: usize,
+        angle_position: AnglePosition,
+    ) -> Triangle {
+        let point = angle_coord.into();
+        let width = width as isize;
+        let height = height as isize;
+        let left = point.x - width;
+        let right = point.x + width;
+        let top = point.y - height;
+        let bottom = point.y + height;
+        match angle_position {
+            AnglePosition::BottomRight | AnglePosition::TopLeft => {
+                Triangle::new(point, (left, bottom), (right, top))
+            }
+            AnglePosition::BottomLeft | AnglePosition::TopRight => {
+                Triangle::new(point, (left, top), (right, bottom))
+            }
+        }
+    }
+
+    /// Create an equilateral triangle with width and height of [size] around [center]
+    /// The top left would be (center.x - size / 2, center.y + size / 2) and bottom right (center.x + size / 2, center.y + size / 2)
+    pub fn equilateral<P: Into<Coord>>(center: P, size: usize, flat_side: FlatSide) -> Triangle {
+        let point = center.into();
+        let dist = (size / 2) as isize;
+        let left = point.x - dist;
+        let right = point.x + dist;
+        let top = point.y - dist;
+        let bottom = point.y + dist;
+        match flat_side {
+            FlatSide::Top => Triangle::new((left, top), (right, top), (point.x, bottom)),
+            FlatSide::Bottom => Triangle::new((left, bottom), (right, bottom), (point.x, top)),
+            FlatSide::Left => Triangle::new((left, top), (left, bottom), (right, point.y)),
+            FlatSide::Right => Triangle::new((right, top), (right, bottom), (left, point.y)),
+        }
     }
 }

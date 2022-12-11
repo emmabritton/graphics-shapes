@@ -17,6 +17,7 @@
 //!```
 
 #![deny(clippy::all)]
+#![forbid(unsafe_code)]
 
 use crate::coord::Coord;
 use crate::general_math::{rotate_points, scale_points};
