@@ -51,7 +51,7 @@ pub trait Shape {
     /// moves the shapes first point to `point`
     /// (and changes every other point to match their original distance and angle)
     ///
-    /// As this moves self.point[0] the result might be unexpected if the shape was created
+    /// As this moves self.points()[0] the result might be unexpected if the shape was created
     /// right to left and/or bottom to top
     fn move_to<P: Into<Coord>>(&self, point: P) -> Self
     where

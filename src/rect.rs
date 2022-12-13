@@ -8,6 +8,9 @@ use crate::{rotate_points, Shape};
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
 
+/// Rectangle
+///
+/// Must have flat edges, to rotate first convert to [Polygon] using [Rect::as_polygon()]
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Rect {
@@ -125,6 +128,7 @@ impl Rect {
         Circle::new(self.center(), radius)
     }
 
+    /// Create two triangles
     pub fn as_triangles(&self) -> (Triangle, Triangle) {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
@@ -134,6 +138,7 @@ impl Rect {
         )
     }
 
+    /// Same shape but represented as four points/lines instead of two points
     pub fn as_polygon(&self) -> Polygon {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
