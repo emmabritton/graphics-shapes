@@ -94,8 +94,8 @@ impl Triangle {
 
 impl Shape for Triangle {
     fn from_points(points: Vec<Coord>) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         Triangle::new(points[0], points[1], points[2])
     }
@@ -165,8 +165,8 @@ impl Triangle {
         match angle_position {
             AnglePosition::TopLeft => Triangle::new(point, (right, point.y), (point.x, bottom)),
             AnglePosition::BottomRight => Triangle::new(point, (left, point.y), (point.x, top)),
-            AnglePosition::BottomLeft => Triangle::new(point,  (right, point.y),(point.x, top)),
-            AnglePosition::TopRight => Triangle::new(point, (left, point.y), (point.x, bottom))
+            AnglePosition::BottomLeft => Triangle::new(point, (right, point.y), (point.x, top)),
+            AnglePosition::TopRight => Triangle::new(point, (left, point.y), (point.x, bottom)),
         }
     }
 
@@ -195,22 +195,38 @@ mod test {
     #[test]
     fn right_angle_triangles() {
         let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::TopLeft);
-        assert_eq!(triangle.points[0], (100, 100).into(), "topleft - main angle");
+        assert_eq!(
+            triangle.points[0],
+            (100, 100).into(),
+            "topleft - main angle"
+        );
         assert_eq!(triangle.points[1], (200, 100).into(), "topleft - same y");
         assert_eq!(triangle.points[2], (100, 200).into(), "topleft - same x");
 
         let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::BottomRight);
-        assert_eq!(triangle.points[0], (100, 100).into(), "bottomright - main angle");
+        assert_eq!(
+            triangle.points[0],
+            (100, 100).into(),
+            "bottomright - main angle"
+        );
         assert_eq!(triangle.points[1], (0, 100).into(), "bottomright - same y");
         assert_eq!(triangle.points[2], (100, 0).into(), "bottomright - same x");
 
         let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::TopRight);
-        assert_eq!(triangle.points[0], (100, 100).into(), "topright - main angle");
+        assert_eq!(
+            triangle.points[0],
+            (100, 100).into(),
+            "topright - main angle"
+        );
         assert_eq!(triangle.points[1], (0, 100).into(), "topright - same y");
         assert_eq!(triangle.points[2], (100, 200).into(), "topright - same x");
 
         let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::BottomLeft);
-        assert_eq!(triangle.points[0], (100, 100).into(), "bottomleft - main angle");
+        assert_eq!(
+            triangle.points[0],
+            (100, 100).into(),
+            "bottomleft - main angle"
+        );
         assert_eq!(triangle.points[1], (200, 100).into(), "bottomleft - same y");
         assert_eq!(triangle.points[2], (100, 0).into(), "bottomleft - same x");
     }
