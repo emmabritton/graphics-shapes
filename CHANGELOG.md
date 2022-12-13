@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.6
+- Fix bug with Triangle::right_angle() 
+
 ### Version 0.1.5
 - Add Triangle::right_angle and Triangle::equilateral constructor methods
 
