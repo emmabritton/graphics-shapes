@@ -15,6 +15,7 @@ pub struct Ellipse {
 }
 
 impl Ellipse {
+    #[must_use]
     pub fn new<P: Into<Coord>>(center: P, width: usize, height: usize) -> Self {
         Self {
             center: center.into(),
@@ -26,11 +27,13 @@ impl Ellipse {
 
 impl Ellipse {
     #[inline]
+    #[must_use]
     pub fn width(&self) -> usize {
         self.width
     }
 
     #[inline]
+    #[must_use]
     pub fn height(&self) -> usize {
         self.height
     }
@@ -99,26 +102,28 @@ impl Shape for Ellipse {
 }
 
 impl Ellipse {
+    #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
+    #[must_use]
     pub fn as_horizontal_line(&self) -> Line {
         Line::new((self.left(), self.center.y), (self.right(), self.center.y))
     }
 
+    #[must_use]
     pub fn as_vertical_line(&self) -> Line {
         Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
     }
 
-    /// Create line from center to right edge at 0 degrees
+    /// Create line from center to top edge at 0 degrees
+    #[must_use]
     pub fn as_radius_line(&self) -> Line {
-        Line::new(
-            (self.center.x, self.center.y),
-            (self.right(), self.center.y),
-        )
+        Line::new((self.center.x, self.center.y), (self.center.x, self.top()))
     }
 
+    #[must_use]
     pub fn as_circle(&self) -> Option<Circle> {
         if self.width == self.height {
             Some(Circle::new(self.center, self.width / 2))

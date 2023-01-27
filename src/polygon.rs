@@ -16,6 +16,7 @@ pub struct Polygon {
 }
 
 impl Polygon {
+    #[must_use]
     pub fn new<P: Into<Coord>>(points: Vec<P>) -> Self {
         let points: Vec<Coord> = points.into_iter().map(|p| p.into()).collect();
         let fpoints = points.iter().map(|p| (p.x as f32, p.y as f32)).collect();
@@ -37,21 +38,25 @@ impl Polygon {
 
 impl Polygon {
     #[inline]
+    #[must_use]
     pub fn fpoints(&self) -> &Vec<(f32, f32)> {
         &self.fpoints
     }
 
     #[inline]
+    #[must_use]
     pub fn is_regular(&self) -> bool {
         self.is_regular
     }
 
+    #[must_use]
     pub fn point_closest_to_center(&self) -> Coord {
         let mut list = self.points.clone();
         list.sort_by_key(|p| p.distance(self.center));
         list[0]
     }
 
+    #[must_use]
     pub fn point_farthest_from_center(&self) -> Coord {
         let mut list = self.points.clone();
         list.sort_by_key(|p| p.distance(self.center));
@@ -59,6 +64,7 @@ impl Polygon {
     }
 
     #[inline]
+    #[must_use]
     pub fn is_convex(&self) -> bool {
         self.is_convex
     }
@@ -106,16 +112,19 @@ impl Shape for Polygon {
 
 impl Polygon {
     /// Creates a circle using the point closest to the center
+    #[must_use]
     pub fn as_inner_circle(&self) -> Circle {
         Circle::from_points(vec![self.center, self.point_closest_to_center()])
     }
 
     /// Creates a circle using the point farthest to the center
+    #[must_use]
     pub fn as_outer_circle(&self) -> Circle {
         Circle::from_points(vec![self.center, self.point_farthest_from_center()])
     }
 
     /// Creates a circle using the average point distance from the center
+    #[must_use]
     pub fn as_avg_circle(&self) -> Circle {
         let total: usize = self.points.iter().map(|p| p.distance(self.center)).sum();
         let radius = total / self.points.len();
@@ -123,6 +132,7 @@ impl Polygon {
     }
 
     /// If the polygon is regular then it returns a circle from center to the first point
+    #[must_use]
     pub fn as_circle(&self) -> Option<Circle> {
         if self.is_regular {
             Some(Circle::from_points(vec![self.center, self.points[0]]))
@@ -131,12 +141,14 @@ impl Polygon {
         }
     }
 
+    #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
     /// Cuts shape into triangles, triangles will be from the center to the edge
     /// This only works on convex polygons
+    #[must_use]
     pub fn as_triangles(&self) -> Option<Vec<Triangle>> {
         if !self.is_convex {
             return None;

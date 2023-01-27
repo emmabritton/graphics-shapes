@@ -14,6 +14,7 @@ pub struct Circle {
 }
 
 impl Circle {
+    #[must_use]
     pub fn new<P: Into<Coord>>(center: P, radius: usize) -> Self {
         Self {
             center: center.into(),
@@ -27,6 +28,7 @@ impl Circle {
     ///
     /// Distance from center to edge
     #[inline]
+    #[must_use]
     pub fn radius(&self) -> usize {
         self.radius
     }
@@ -88,23 +90,28 @@ impl Shape for Circle {
 }
 
 impl Circle {
+    #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
-    /// Create line from center to edge at 0 degrees
+    /// Create line from center to top edge at 0 degrees
+    #[must_use]
     pub fn as_radius_line(&self) -> Line {
-        Line::from_points(self.points())
+        Line::new((self.center.x, self.center.y), (self.center.x, self.top()))
     }
 
+    #[must_use]
     pub fn as_horizontal_line(&self) -> Line {
         Line::new((self.left(), self.center.y), (self.right(), self.center.y))
     }
 
+    #[must_use]
     pub fn as_vertical_line(&self) -> Line {
         Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
     }
 
+    #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
         Ellipse::new(self.center, self.radius * 2, self.radius * 2)
     }

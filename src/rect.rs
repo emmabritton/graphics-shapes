@@ -19,6 +19,7 @@ pub struct Rect {
 }
 
 impl Rect {
+    #[must_use]
     pub fn new<P1: Into<Coord>, P2: Into<Coord>>(top_left: P1, bottom_right: P2) -> Self {
         Self {
             top_left: top_left.into(),
@@ -26,6 +27,7 @@ impl Rect {
         }
     }
 
+    #[must_use]
     pub fn new_with_size<P: Into<Coord>>(start: P, width: usize, height: usize) -> Self {
         let top_left = start.into();
         let bottom_right = Coord {
@@ -40,25 +42,30 @@ impl Rect {
 }
 
 impl Rect {
+    #[must_use]
     pub fn width(&self) -> usize {
         (self.bottom_right.x - self.top_left.x).unsigned_abs()
     }
 
+    #[must_use]
     pub fn height(&self) -> usize {
         (self.bottom_right.y - self.top_left.y).unsigned_abs()
     }
 
     #[inline]
+    #[must_use]
     pub fn top_left(&self) -> Coord {
         self.top_left
     }
 
     #[inline]
+    #[must_use]
     pub fn bottom_right(&self) -> Coord {
         self.bottom_right
     }
 
     #[inline]
+    #[must_use]
     pub fn is_square(&self) -> bool {
         let diff = self.bottom_right - self.top_left;
         diff.x == diff.y
@@ -117,18 +124,21 @@ impl Shape for Rect {
 
 impl Rect {
     /// Create a circle around the center to the closest edge
+    #[must_use]
     pub fn as_smallest_circle(&self) -> Circle {
         let radius = self.width().div(2).min(self.height().div(2));
         Circle::new(self.center(), radius)
     }
 
     /// Create a circle around the center to the farthest edge
+    #[must_use]
     pub fn as_biggest_circle(&self) -> Circle {
         let radius = self.width().div(2).max(self.height().div(2));
         Circle::new(self.center(), radius)
     }
 
     /// Create two triangles
+    #[must_use]
     pub fn as_triangles(&self) -> (Triangle, Triangle) {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
@@ -139,6 +149,7 @@ impl Rect {
     }
 
     /// Same shape but represented as four points/lines instead of two points
+    #[must_use]
     pub fn as_polygon(&self) -> Polygon {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
@@ -150,6 +161,7 @@ impl Rect {
         ])
     }
 
+    #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
         Ellipse::from_points(self.points())
     }

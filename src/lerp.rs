@@ -7,6 +7,7 @@ pub trait Lerp {
     ///      10.lerp(20, 0.1) returns 11
     ///
     /// internally the values are cast as f32 and rounded before being returned
+    #[must_use]
     fn lerp(self, end: Self, percent: f32) -> Self;
 }
 
@@ -15,6 +16,7 @@ pub trait Lerp {
 ///
 /// see [f32::lerp]
 #[inline]
+#[must_use]
 pub fn flerp(start: f32, end: f32, percent: f32) -> f32 {
     start + ((end - start) * percent)
 }

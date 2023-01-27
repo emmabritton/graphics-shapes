@@ -3,6 +3,7 @@ use crate::Coord;
 /// Scale `points` (move them towards or away) around the `center` by `factor`
 ///
 /// The resulting points distance will be points[x].distance(center) * factor but at the same angle
+#[must_use]
 pub fn scale_points(center: Coord, points: &[Coord], factor: f32) -> Vec<Coord> {
     let mut output = vec![];
     for point in points {
@@ -20,6 +21,7 @@ pub fn scale_points(center: Coord, points: &[Coord], factor: f32) -> Vec<Coord> 
 /// Rotate `points` around the `center` by `degrees`
 ///
 /// The resulting points at the same distance but at +degrees angle
+#[must_use]
 pub fn rotate_points(center: Coord, points: &[Coord], degrees: isize) -> Vec<Coord> {
     let mut output = vec![];
     for point in points {

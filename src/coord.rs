@@ -13,10 +13,12 @@ pub struct Coord {
 
 impl Coord {
     #[inline]
+    #[must_use]
     pub const fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }
 
+    #[must_use]
     pub fn from_angle<P: Into<Coord>>(center: P, distance: usize, degrees: isize) -> Self {
         let center = center.into();
         let distance = distance as f32;
@@ -29,6 +31,7 @@ impl Coord {
 
 impl Coord {
     /// Distance between self and rhs
+    #[must_use]
     pub fn distance<P: Into<Coord>>(self, rhs: P) -> usize {
         let rhs = rhs.into();
         let x = (rhs.x - self.x) as f32;
@@ -38,6 +41,7 @@ impl Coord {
 
     /// Point midway in between self and rhs
     /// Use lerp for other positions
+    #[must_use]
     pub fn mid_point<P: Into<Coord>>(self, rhs: P) -> Coord {
         let rhs = rhs.into();
         let x = (self.x + rhs.x) / 2;
@@ -46,6 +50,7 @@ impl Coord {
     }
 
     /// Angle in degrees from self to rhs
+    #[must_use]
     pub fn angle_to<P: Into<Coord>>(self, rhs: P) -> isize {
         let rhs = rhs.into();
         let x = (rhs.x - self.x) as f32;
@@ -53,22 +58,26 @@ impl Coord {
         y.atan2(x).to_degrees().round() as isize
     }
 
+    #[must_use]
     pub fn cross_product<P: Into<Coord>>(self, rhs: P) -> isize {
         let rhs = rhs.into();
         self.x * rhs.y - self.y * rhs.x
     }
 
+    #[must_use]
     pub fn dot_product<P: Into<Coord>>(self, rhs: P) -> isize {
         let rhs = rhs.into();
         self.x * rhs.x + self.y * rhs.y
     }
 
     #[inline]
+    #[must_use]
     pub const fn perpendicular(self) -> Coord {
         Coord::new(self.y, -self.x)
     }
 
     #[inline]
+    #[must_use]
     pub const fn abs(self) -> Coord {
         Coord {
             x: self.x.abs(),
@@ -81,6 +90,7 @@ impl<P: Into<Coord>> Add<P> for Coord {
     type Output = Coord;
 
     #[inline]
+    #[must_use]
     fn add(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -94,6 +104,7 @@ impl Neg for Coord {
     type Output = Coord;
 
     #[inline]
+    #[must_use]
     fn neg(self) -> Self::Output {
         Coord {
             x: -self.x,
@@ -105,6 +116,8 @@ impl Neg for Coord {
 impl<P: Into<Coord>> Sub<P> for Coord {
     type Output = Coord;
 
+    #[inline]
+    #[must_use]
     fn sub(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -118,6 +131,7 @@ impl<P: Into<Coord>> Mul<P> for Coord {
     type Output = Coord;
 
     #[inline]
+    #[must_use]
     fn mul(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -129,6 +143,8 @@ impl<P: Into<Coord>> Mul<P> for Coord {
 
 #[cfg(feature = "mint")]
 impl From<Point2<isize>> for Coord {
+    #[inline]
+    #[must_use]
     fn from(point: Point2<isize>) -> Self {
         Coord {
             x: point.x,
@@ -139,6 +155,8 @@ impl From<Point2<isize>> for Coord {
 
 #[cfg(feature = "mint")]
 impl From<Coord> for Point2<isize> {
+    #[inline]
+    #[must_use]
     fn from(coord: Coord) -> Self {
         Point2 {
             x: coord.x,
@@ -151,6 +169,7 @@ macro_rules! impl_from_num {
     ($num_type:ty) => {
         impl From<($num_type, $num_type)> for Coord {
             #[inline]
+            #[must_use]
             fn from(nums: ($num_type, $num_type)) -> Coord {
                 Coord {
                     x: nums.0 as isize,
@@ -163,6 +182,7 @@ macro_rules! impl_from_num {
             type Output = Coord;
 
             #[inline]
+            #[must_use]
             fn add(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x + rhs as isize,
@@ -175,6 +195,7 @@ macro_rules! impl_from_num {
             type Output = Coord;
 
             #[inline]
+            #[must_use]
             fn sub(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x - rhs as isize,
@@ -187,6 +208,7 @@ macro_rules! impl_from_num {
             type Output = Coord;
 
             #[inline]
+            #[must_use]
             fn mul(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x * rhs as isize,

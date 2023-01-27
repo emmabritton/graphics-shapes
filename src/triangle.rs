@@ -30,6 +30,7 @@ pub struct Triangle {
 }
 
 impl Triangle {
+    #[must_use]
     pub fn new<P1: Into<Coord>, P2: Into<Coord>, P3: Into<Coord>>(
         point1: P1,
         point2: P2,
@@ -79,14 +80,17 @@ impl Triangle {
 
 impl Triangle {
     #[inline]
+    #[must_use]
     pub fn angles(&self) -> [isize; 3] {
         self.angles
     }
     #[inline]
+    #[must_use]
     pub fn angle_type(&self) -> &TriangleAngleType {
         &self.angle_type
     }
     #[inline]
+    #[must_use]
     pub fn side_type(&self) -> &TriangleSideType {
         &self.side_type
     }
@@ -145,10 +149,12 @@ pub enum FlatSide {
 }
 
 impl Triangle {
+    #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
+    #[must_use]
     pub fn right_angle<P: Into<Coord>>(
         angle_coord: P,
         width: usize,
@@ -172,6 +178,7 @@ impl Triangle {
 
     /// Create an equilateral triangle with width and height of [size] around [center]
     /// The top left would be (center.x - size / 2, center.y + size / 2) and bottom right (center.x + size / 2, center.y + size / 2)
+    #[must_use]
     pub fn equilateral<P: Into<Coord>>(center: P, size: usize, flat_side: FlatSide) -> Triangle {
         let point = center.into();
         let dist = (size / 2) as isize;

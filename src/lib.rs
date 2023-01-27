@@ -32,13 +32,25 @@ pub mod polygon;
 pub mod rect;
 pub mod triangle;
 
+pub mod prelude {
+    pub use crate::circle::Circle;
+    pub use crate::ellipse::Ellipse;
+    pub use crate::line::Line;
+    pub use crate::polygon::Polygon;
+    pub use crate::rect::Rect;
+    pub use crate::triangle::Triangle;
+    pub use crate::Shape;
+}
+
 pub trait Shape {
     /// create this shape from a list of points
+    #[must_use]
     fn from_points(points: Vec<Coord>) -> Self
     where
         Self: Sized;
 
     /// change every point by +`delta`
+    #[must_use]
     fn translate_by<P: Into<Coord>>(&self, delta: P) -> Self
     where
         Self: Sized,
@@ -53,6 +65,7 @@ pub trait Shape {
     ///
     /// As this moves self.points()[0] the result might be unexpected if the shape was created
     /// right to left and/or bottom to top
+    #[must_use]
     fn move_to<P: Into<Coord>>(&self, point: P) -> Self
     where
         Self: Sized,
@@ -63,11 +76,15 @@ pub trait Shape {
     }
 
     /// returns true if the shape contains point
+    #[must_use]
     fn contains<P: Into<Coord>>(&self, point: P) -> bool;
 
     /// points(corners) the shape is made of
+    #[must_use]
     fn points(&self) -> Vec<Coord>;
 
+    /// rotate shape around it's center
+    #[must_use]
     fn rotate(&self, degrees: isize) -> Self
     where
         Self: Sized,
@@ -75,6 +92,8 @@ pub trait Shape {
         self.rotate_around(degrees, self.center())
     }
 
+    /// rotate shape around a point
+    #[must_use]
     fn rotate_around<P: Into<Coord>>(&self, degrees: isize, point: P) -> Self
     where
         Self: Sized,
@@ -82,30 +101,37 @@ pub trait Shape {
         let points = rotate_points(point.into(), &self.points(), degrees);
         Self::from_points(points)
     }
+
     /// center of shape
+    #[must_use]
     fn center(&self) -> Coord;
 
     /// x of the left most point
+    #[must_use]
     fn left(&self) -> isize {
         self.points().iter().map(|p| p.x).min().unwrap()
     }
 
     /// x of the right most point
+    #[must_use]
     fn right(&self) -> isize {
         self.points().iter().map(|p| p.x).max().unwrap()
     }
 
     /// y of the top most point
+    #[must_use]
     fn top(&self) -> isize {
         self.points().iter().map(|p| p.y).min().unwrap()
     }
 
     /// y of the bottom most point
+    #[must_use]
     fn bottom(&self) -> isize {
         self.points().iter().map(|p| p.y).max().unwrap()
     }
 
     /// scale the shape by factor (around the center, so the change will be uniform)
+    #[must_use]
     fn scale(&self, factor: f32) -> Self
     where
         Self: Sized,
@@ -114,6 +140,7 @@ pub trait Shape {
     }
 
     /// scale the shape by factor around point
+    #[must_use]
     fn scale_around<P: Into<Coord>>(&self, factor: f32, point: P) -> Self
     where
         Self: Sized,
@@ -125,5 +152,6 @@ pub trait Shape {
 
 pub trait Intersects<T> {
     /// returns true if `shape` intersects this shape
+    #[must_use]
     fn intersects(&self, shape: T) -> bool;
 }

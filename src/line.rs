@@ -24,6 +24,7 @@ pub struct Line {
 }
 
 impl Line {
+    #[must_use]
     pub fn new<P1: Into<Coord>, P2: Into<Coord>>(start: P1, end: P2) -> Self {
         let start = start.into();
         let end = end.into();
@@ -51,26 +52,31 @@ impl Line {
 impl Line {
     #[allow(clippy::len_without_is_empty)] //use start()==end() to check that
     #[inline]
+    #[must_use]
     pub fn len(&self) -> usize {
         self.len
     }
 
     #[inline]
+    #[must_use]
     pub fn angle(&self) -> isize {
         self.angle
     }
 
     #[inline]
+    #[must_use]
     pub fn start(&self) -> Coord {
         self.start
     }
 
     #[inline]
+    #[must_use]
     pub fn end(&self) -> Coord {
         self.end
     }
 
     #[inline]
+    #[must_use]
     pub fn line_type(&self) -> LineType {
         self.line_type
     }
@@ -129,10 +135,12 @@ impl Shape for Line {
 }
 
 impl Line {
+    #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new(self.start, self.end)
     }
 
+    #[must_use]
     pub fn as_circle(&self) -> Circle {
         Circle::new(self.start, self.start.distance(self.end))
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.1.7
+- Add prelude module
+- Add must_use to all methods
+
 ### Version 0.1.6
 - Fix bug with Triangle::right_angle() 
 
