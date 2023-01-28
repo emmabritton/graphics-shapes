@@ -34,13 +34,13 @@ pub mod triangle;
 
 pub mod prelude {
     pub use crate::circle::Circle;
+    pub use crate::coord::*;
     pub use crate::ellipse::Ellipse;
     pub use crate::line::Line;
     pub use crate::polygon::Polygon;
     pub use crate::rect::Rect;
     pub use crate::triangle::Triangle;
     pub use crate::Shape;
-    pub use crate::coord::*;
 }
 
 pub trait Shape {
