@@ -18,11 +18,12 @@ impl Coord {
         Self { x, y }
     }
 
+    /// 0 is the top of the circle
     #[must_use]
     pub fn from_angle<P: Into<Coord>>(center: P, distance: usize, degrees: isize) -> Self {
         let center = center.into();
         let distance = distance as f32;
-        let rads = (degrees as f32).to_radians();
+        let rads = (degrees as f32 - 90.0).to_radians();
         let x = (distance * rads.cos()).round() as isize;
         let y = (distance * rads.sin()).round() as isize;
         Coord::new(center.x + x, center.y + y)
@@ -50,12 +51,13 @@ impl Coord {
     }
 
     /// Angle in degrees from self to rhs
+    /// 0 is the top of the circle
     #[must_use]
     pub fn angle_to<P: Into<Coord>>(self, rhs: P) -> isize {
         let rhs = rhs.into();
         let x = (rhs.x - self.x) as f32;
         let y = (rhs.y - self.y) as f32;
-        y.atan2(x).to_degrees().round() as isize
+        y.atan2(x).to_degrees().round() as isize + 90
     }
 
     #[must_use]
