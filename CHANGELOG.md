@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.1.8
+- Change constructors to take slices instead of vecs
+- Fix bug in `move_to`
+
 ### Version 0.1.7
 - Add prelude module
 - Add must_use to all methods

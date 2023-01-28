@@ -154,10 +154,34 @@ impl From<Point2<isize>> for Coord {
 }
 
 #[cfg(feature = "mint")]
+impl From<&Point2<isize>> for Coord {
+    #[inline]
+    #[must_use]
+    fn from(point: &Point2<isize>) -> Self {
+        Coord {
+            x: point.x,
+            y: point.y,
+        }
+    }
+}
+
+#[cfg(feature = "mint")]
 impl From<Coord> for Point2<isize> {
     #[inline]
     #[must_use]
     fn from(coord: Coord) -> Self {
+        Point2 {
+            x: coord.x,
+            y: coord.y,
+        }
+    }
+}
+
+#[cfg(feature = "mint")]
+impl From<&Coord> for Point2<isize> {
+    #[inline]
+    #[must_use]
+    fn from(coord: &Coord) -> Self {
         Point2 {
             x: coord.x,
             y: coord.y,
@@ -171,6 +195,17 @@ macro_rules! impl_from_num {
             #[inline]
             #[must_use]
             fn from(nums: ($num_type, $num_type)) -> Coord {
+                Coord {
+                    x: nums.0 as isize,
+                    y: nums.1 as isize,
+                }
+            }
+        }
+
+        impl From<&($num_type, $num_type)> for Coord {
+            #[inline]
+            #[must_use]
+            fn from(nums: &($num_type, $num_type)) -> Coord {
                 Coord {
                     x: nums.0 as isize,
                     y: nums.1 as isize,
@@ -217,6 +252,12 @@ macro_rules! impl_from_num {
             }
         }
     };
+}
+
+impl From<&Coord> for Coord {
+    fn from(value: &Coord) -> Self {
+        *value
+    }
 }
 
 impl_from_num!(u8);

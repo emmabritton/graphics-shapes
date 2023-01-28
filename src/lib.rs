@@ -45,7 +45,7 @@ pub mod prelude {
 pub trait Shape {
     /// create this shape from a list of points
     #[must_use]
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized;
 
@@ -56,8 +56,8 @@ pub trait Shape {
         Self: Sized,
     {
         let delta = delta.into();
-        let points = self.points().iter().map(|p| *p + delta).collect();
-        Self::from_points(points)
+        let points: Vec<Coord> = self.points().iter().map(|p| *p + delta).collect();
+        Self::from_points(&points)
     }
 
     /// moves the shapes first point to `point`
@@ -70,9 +70,8 @@ pub trait Shape {
     where
         Self: Sized,
     {
-        let point = point.into();
-        let points = self.points().iter().map(|p| *p - point).collect();
-        Self::from_points(points)
+        let diff = (point.into()) - self.points()[0];
+        self.translate_by(diff)
     }
 
     /// returns true if the shape contains point
@@ -99,7 +98,7 @@ pub trait Shape {
         Self: Sized,
     {
         let points = rotate_points(point.into(), &self.points(), degrees);
-        Self::from_points(points)
+        Self::from_points(&points)
     }
 
     /// center of shape
@@ -146,7 +145,7 @@ pub trait Shape {
         Self: Sized,
     {
         let points = scale_points(point.into(), &self.points(), factor);
-        Self::from_points(points)
+        Self::from_points(&points)
     }
 }
 

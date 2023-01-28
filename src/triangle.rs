@@ -97,7 +97,7 @@ impl Triangle {
 }
 
 impl Shape for Triangle {
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {
@@ -197,7 +197,9 @@ impl Triangle {
 
 #[cfg(test)]
 mod test {
-    use crate::triangle::{AnglePosition, Triangle};
+    use crate::coord::Coord;
+    use crate::triangle::{AnglePosition, FlatSide, Triangle};
+    use crate::Shape;
 
     #[test]
     fn right_angle_triangles() {
@@ -236,5 +238,13 @@ mod test {
         );
         assert_eq!(triangle.points[1], (200, 100).into(), "bottomleft - same y");
         assert_eq!(triangle.points[2], (100, 0).into(), "bottomleft - same x");
+    }
+
+    #[test]
+    fn check_moving() {
+        let triangle = Triangle::equilateral((50, 50), 10, FlatSide::Left);
+        assert_eq!(triangle.points[0], Coord::new(45, 45));
+        let moved = triangle.move_to((30, 30));
+        assert_eq!(moved.points[0], Coord::new(30, 30));
     }
 }

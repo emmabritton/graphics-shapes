@@ -41,7 +41,7 @@ impl Ellipse {
 
 impl Shape for Ellipse {
     /// must be [top_left, bottom_right]
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {

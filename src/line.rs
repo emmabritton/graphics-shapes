@@ -83,7 +83,7 @@ impl Line {
 }
 
 impl Shape for Line {
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {

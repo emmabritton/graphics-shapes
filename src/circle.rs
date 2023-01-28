@@ -36,7 +36,7 @@ impl Circle {
 
 impl Shape for Circle {
     /// must be [center, edge]
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {

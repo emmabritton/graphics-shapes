@@ -17,8 +17,11 @@ pub struct Polygon {
 
 impl Polygon {
     #[must_use]
-    pub fn new<P: Into<Coord>>(points: Vec<P>) -> Self {
-        let points: Vec<Coord> = points.into_iter().map(|p| p.into()).collect();
+    pub fn new<'a, P: Into<Coord>>(points: &'a [P]) -> Self
+    where
+        Coord: From<&'a P>,
+    {
+        let points: Vec<Coord> = points.iter().map(|p| p.into()).collect();
         let fpoints = points.iter().map(|p| (p.x as f32, p.y as f32)).collect();
         let is_convex = is_convex(&points);
         let mut poly = Self {
@@ -71,7 +74,7 @@ impl Polygon {
 }
 
 impl Shape for Polygon {
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {
@@ -114,13 +117,13 @@ impl Polygon {
     /// Creates a circle using the point closest to the center
     #[must_use]
     pub fn as_inner_circle(&self) -> Circle {
-        Circle::from_points(vec![self.center, self.point_closest_to_center()])
+        Circle::from_points(&[self.center, self.point_closest_to_center()])
     }
 
     /// Creates a circle using the point farthest to the center
     #[must_use]
     pub fn as_outer_circle(&self) -> Circle {
-        Circle::from_points(vec![self.center, self.point_farthest_from_center()])
+        Circle::from_points(&[self.center, self.point_farthest_from_center()])
     }
 
     /// Creates a circle using the average point distance from the center
@@ -135,7 +138,7 @@ impl Polygon {
     #[must_use]
     pub fn as_circle(&self) -> Option<Circle> {
         if self.is_regular {
-            Some(Circle::from_points(vec![self.center, self.points[0]]))
+            Some(Circle::from_points(&[self.center, self.points[0]]))
         } else {
             None
         }

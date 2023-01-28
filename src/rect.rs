@@ -73,7 +73,7 @@ impl Rect {
 }
 
 impl Shape for Rect {
-    fn from_points(points: Vec<Coord>) -> Self
+    fn from_points(points: &[Coord]) -> Self
     where
         Self: Sized,
     {
@@ -98,7 +98,7 @@ impl Shape for Rect {
     {
         let degrees = (degrees as f32 / 90.0).round() as isize;
         let points = rotate_points(point.into(), &self.points(), degrees * 90);
-        Self::from_points(points)
+        Self::from_points(&points)
     }
 
     fn center(&self) -> Coord {
@@ -153,16 +153,11 @@ impl Rect {
     pub fn as_polygon(&self) -> Polygon {
         let top_right = Coord::new(self.right(), self.top());
         let bottom_left = Coord::new(self.left(), self.bottom());
-        Polygon::new(vec![
-            self.top_left,
-            top_right,
-            self.bottom_right,
-            bottom_left,
-        ])
+        Polygon::new(&[self.top_left, top_right, self.bottom_right, bottom_left])
     }
 
     #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
-        Ellipse::from_points(self.points())
+        Ellipse::from_points(&self.points())
     }
 }
