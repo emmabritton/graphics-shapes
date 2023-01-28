@@ -40,6 +40,7 @@ pub mod prelude {
     pub use crate::rect::Rect;
     pub use crate::triangle::Triangle;
     pub use crate::Shape;
+    pub use crate::coord::*;
 }
 
 pub trait Shape {

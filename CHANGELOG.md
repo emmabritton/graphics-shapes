@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.9
+- Add coord to prelude
+
 ### Version 0.1.8
 - Change constructors to take slices instead of vecs
 - Fix bug in `move_to`
