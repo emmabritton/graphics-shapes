@@ -301,11 +301,11 @@ mod test {
             let twoseventy_degree = Coord::from_angle(center, 20, 270);
             let seventwenty_degree = Coord::from_angle(center, 20, 720);
 
-            assert_eq!(zero_degree, (120, 100).into());
-            assert_eq!(ninety_degree, (100, 120).into());
-            assert_eq!(oneeighty_degree, (80, 100).into());
-            assert_eq!(twoseventy_degree, (100, 80).into());
-            assert_eq!(seventwenty_degree, (120, 100).into());
+            assert_eq!(zero_degree, (100, 80).into());
+            assert_eq!(ninety_degree, (120, 100).into());
+            assert_eq!(oneeighty_degree, (100, 120).into());
+            assert_eq!(twoseventy_degree, (80, 100).into());
+            assert_eq!(seventwenty_degree, (100, 80).into());
         }
 
         #[test]
@@ -318,11 +318,11 @@ mod test {
             let twoseventy_degree = Coord::from_angle(center, 20, -270);
             let seventwenty_degree = Coord::from_angle(center, 20, -720);
 
-            assert_eq!(zero_degree, (120, 100).into());
-            assert_eq!(ninety_degree, (100, 80).into());
-            assert_eq!(oneeighty_degree, (80, 100).into());
-            assert_eq!(twoseventy_degree, (100, 120).into());
-            assert_eq!(seventwenty_degree, (120, 100).into());
+            assert_eq!(zero_degree, (100, 80).into());
+            assert_eq!(ninety_degree, (80, 100).into());
+            assert_eq!(oneeighty_degree, (100, 120).into());
+            assert_eq!(twoseventy_degree, (120, 100).into());
+            assert_eq!(seventwenty_degree, (100, 80).into());
         }
 
         #[test]
@@ -334,10 +334,10 @@ mod test {
             let degree_225 = Coord::from_angle(center, 20, 225);
             let degree_315 = Coord::from_angle(center, 20, 315);
 
-            assert_eq!(degree_45, (114, 114).into());
-            assert_eq!(degree_135, (86, 114).into());
-            assert_eq!(degree_225, (86, 86).into());
-            assert_eq!(degree_315, (114, 86).into());
+            assert_eq!(degree_45, (114, 86).into());
+            assert_eq!(degree_135, (114, 114).into());
+            assert_eq!(degree_225, (86, 114).into());
+            assert_eq!(degree_315, (86, 86).into());
         }
     }
 
@@ -362,10 +362,10 @@ mod test {
         fn angle() {
             let center = Coord::new(20, 20);
 
-            assert_eq!(center.angle_to((30, 20)), 0);
-            assert_eq!(center.angle_to((20, 30)), 90);
-            assert_eq!(center.angle_to((10, 20)), 180);
-            assert_eq!(center.angle_to((20, 10)), -90);
+            assert_eq!(center.angle_to((30, 20)), 90);
+            assert_eq!(center.angle_to((20, 30)), 180);
+            assert_eq!(center.angle_to((10, 20)), 270);
+            assert_eq!(center.angle_to((20, 10)), 0);
         }
 
         #[test]
