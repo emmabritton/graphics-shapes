@@ -75,6 +75,20 @@ pub trait Shape {
         self.translate_by(diff)
     }
 
+    /// moves the shapes centerto `point`
+    /// (and changes every other point to match their original distance and angle)
+    ///
+    /// As this moves relative to self.points()[0] the result might be unexpected if the shape was created
+    /// right to left and/or bottom to top
+    #[must_use]
+    fn move_center_to<P: Into<Coord>>(&self, point: P) -> Self
+    where
+        Self: Sized,
+    {
+        let diff = (point.into()) - (self.center() - self.points()[0]);
+        self.translate_by(diff)
+    }
+
     /// returns true if the shape contains point
     #[must_use]
     fn contains<P: Into<Coord>>(&self, point: P) -> bool;
@@ -150,8 +164,8 @@ pub trait Shape {
     }
 }
 
-pub trait Intersects<T> {
-    /// returns true if `shape` intersects this shape
-    #[must_use]
-    fn intersects(&self, shape: T) -> bool;
-}
+// pub trait Intersects<T> {
+//     /// returns true if `shape` intersects this shape
+//     #[must_use]
+//     fn intersects(&self, shape: T) -> bool;
+// }

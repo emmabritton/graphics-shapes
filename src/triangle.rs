@@ -84,11 +84,13 @@ impl Triangle {
     pub fn angles(&self) -> [isize; 3] {
         self.angles
     }
+
     #[inline]
     #[must_use]
     pub fn angle_type(&self) -> &TriangleAngleType {
         &self.angle_type
     }
+
     #[inline]
     #[must_use]
     pub fn side_type(&self) -> &TriangleSideType {

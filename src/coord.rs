@@ -2,7 +2,7 @@
 use mint::Point2;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
-use std::ops::{Add, Mul, Neg, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
@@ -240,7 +240,11 @@ macro_rules! impl_from_num {
                 }
             }
         }
+    };
+}
 
+macro_rules! int_mul {
+    ($num_type:ty) => {
         impl Mul<$num_type> for Coord {
             type Output = Coord;
 
@@ -250,6 +254,49 @@ macro_rules! impl_from_num {
                 Coord {
                     x: self.x * rhs as isize,
                     y: self.y * rhs as isize,
+                }
+            }
+        }
+
+        impl Div<$num_type> for Coord {
+            type Output = Coord;
+
+            #[inline]
+            #[must_use]
+            fn div(self, rhs: $num_type) -> Self::Output {
+                Coord {
+                    x: self.x / rhs as isize,
+                    y: self.y / rhs as isize,
+                }
+            }
+        }
+    };
+}
+
+macro_rules! float_mul {
+    ($num_type:ty) => {
+        impl Mul<$num_type> for Coord {
+            type Output = Coord;
+
+            #[inline]
+            #[must_use]
+            fn mul(self, rhs: $num_type) -> Self::Output {
+                Coord {
+                    x: ((self.x as $num_type) * rhs).ceil() as isize,
+                    y: ((self.y as $num_type) * rhs).ceil() as isize,
+                }
+            }
+        }
+
+        impl Div<$num_type> for Coord {
+            type Output = Coord;
+
+            #[inline]
+            #[must_use]
+            fn div(self, rhs: $num_type) -> Self::Output {
+                Coord {
+                    x: ((self.x as $num_type) / rhs).ceil() as isize,
+                    y: ((self.y as $num_type) / rhs).ceil() as isize,
                 }
             }
         }
@@ -276,6 +323,20 @@ impl_from_num!(usize);
 impl_from_num!(isize);
 impl_from_num!(f32);
 impl_from_num!(f64);
+int_mul!(u8);
+int_mul!(u16);
+int_mul!(u32);
+int_mul!(u64);
+int_mul!(u128);
+int_mul!(i8);
+int_mul!(i16);
+int_mul!(i32);
+int_mul!(i64);
+int_mul!(i128);
+int_mul!(usize);
+int_mul!(isize);
+float_mul!(f32);
+float_mul!(f64);
 
 #[cfg(test)]
 mod test {
@@ -395,6 +456,10 @@ mod test {
             assert_eq!(Coord::new(4, 6).mul((11, 21)), (44, 126).into());
             assert_eq!(Coord::new(5, -5).abs(), (5, 5).into());
             assert_eq!(Coord::new(6, -4).neg(), (-6, 4).into());
+
+            assert_eq!(Coord::new(4, 8).mul(0.5), (2, 4).into());
+            assert_eq!(Coord::new(4, 8).mul(Coord::from((0.5, 0.5))), (0, 0).into());
+            assert_eq!(Coord::new(4, 8).mul(Coord::from((0.4, 0.4))), (0, 0).into());
         }
     }
 }

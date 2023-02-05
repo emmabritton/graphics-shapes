@@ -8,9 +8,9 @@ Primarily designed to be use with [Buffer Graphics](https://github.com/raybritto
 
 Add this line to Cargo.toml
 ```toml
-graphics-shapes = "0.1.10"
+graphics-shapes = "0.1.11"
 # or with both features
-graphics-shapes = {version = "0.1.10", features = ["mint", "serde"] }
+graphics-shapes = {version = "0.1.11", features = ["mint", "serde"] }
 ```
 
 ### Code 

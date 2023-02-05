@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.1.11
+- Fix bug with multiplying coords and floats
+- Add `Shape::move_center_to`
+
 ### Version 0.1.10
 - Change angle math to use 0 as top
 
