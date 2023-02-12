@@ -2,7 +2,7 @@
 name = "graphics-shapes"
 version = "0.1.11"
 edition = "2021"
-authors = ["Ray Britton <raybritton@pm.me>"]
+authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
 license-file = "LICENSE"
 repository = "https://github.com/raybritton/graphics-shapes"
