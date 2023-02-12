@@ -5,9 +5,8 @@ edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
 license-file = "LICENSE"
-repository = "https://github.com/raybritton/graphics-shapes"
+repository = "https://github.com/emmabritton/graphics-shapes"
 readme = "README.md"
-homepage = "https://github.com/raybritton/graphics-shapes"
 keywords = ["shapes", "simple", "graphics"]
 categories = ["math", "graphics"]
 
