@@ -4,6 +4,7 @@ use crate::rect::Rect;
 use crate::Shape;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
+use std::mem::swap;
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
@@ -131,6 +132,70 @@ impl Shape for Line {
     #[inline]
     fn bottom(&self) -> isize {
         self.end.y
+    }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        let mut start = self.start;
+        let mut end = self.end;
+        if start.x > end.x || start.y > end.y {
+            swap(&mut start, &mut end);
+        }
+        let mut output = vec![];
+        if start.x == end.x {
+            for y in start.y..=end.y {
+                output.push(Coord::new(start.x, y));
+            }
+        } else if start.y == end.y {
+            for x in start.x..=end.x {
+                output.push(Coord::new(x, start.y));
+            }
+        } else {
+            let mut delta = 0;
+            let x1 = start.x;
+            let y1 = start.y;
+            let x2 = end.x;
+            let y2 = end.y;
+            let dx = isize::abs(x2 - x1);
+            let dy = isize::abs(y2 - y1);
+            let dx2 = dx * 2;
+            let dy2 = dy * 2;
+            let ix: isize = if x1 < x2 { 1 } else { -1 };
+            let iy: isize = if y1 < y2 { 1 } else { -1 };
+            let mut x = x1;
+            let mut y = y1;
+            if dx >= dy {
+                loop {
+                    output.push(Coord::new(x, y));
+                    if x == x2 {
+                        break;
+                    }
+                    x += ix;
+                    delta += dy2;
+                    if delta > dx {
+                        y += iy;
+                        delta -= dx2;
+                    }
+                }
+            } else {
+                loop {
+                    output.push(Coord::new(x, y));
+                    if y == y2 {
+                        break;
+                    }
+                    y += iy;
+                    delta += dx2;
+                    if delta > dy {
+                        x += ix;
+                        delta -= dy2;
+                    }
+                }
+            }
+        }
+        output
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        self.outline_points()
     }
 }
 

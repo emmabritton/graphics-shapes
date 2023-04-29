@@ -87,6 +87,56 @@ impl Shape for Circle {
     fn bottom(&self) -> isize {
         self.center.y + (self.radius as isize)
     }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        let cx = self.center.x;
+        let cy = self.center.y;
+        let mut d = (5_isize - (self.radius as isize) * 4) / 4;
+        let mut x = 0;
+        let mut y = self.radius as isize;
+        let mut output = vec![];
+
+        while x <= y {
+            output.push(Coord::new(cx + x, cy + y));
+            output.push(Coord::new(cx + x, cy - y));
+            output.push(Coord::new(cx - x, cy + y));
+            output.push(Coord::new(cx - x, cy - y));
+            output.push(Coord::new(cx + y, cy + x));
+            output.push(Coord::new(cx + y, cy - x));
+            output.push(Coord::new(cx - y, cy + x));
+            output.push(Coord::new(cx - y, cy - x));
+            if d < 0 {
+                d += 2 * x + 1
+            } else {
+                d += 2 * (x - y) + 1;
+                y -= 1;
+            }
+            x += 1;
+        }
+
+        output
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+        let cx = self.center.x;
+        let cy = self.center.y;
+        let squared_radius = (self.radius * self.radius) as isize;
+        for y in 0..(self.radius as isize) {
+            let up = cy - y;
+            let down = cy + y;
+            let half_width = (((squared_radius - y * y) as f64).sqrt().round() as isize).max(0);
+            for x in 0..=half_width {
+                let left = cx - x;
+                let right = cx + x;
+                output.push(Coord::new(left, up));
+                output.push(Coord::new(right, up));
+                output.push(Coord::new(left, down));
+                output.push(Coord::new(right, down));
+            }
+        }
+        output
+    }
 }
 
 impl Circle {

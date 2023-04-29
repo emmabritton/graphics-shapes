@@ -1,3 +1,4 @@
+use crate::line::Line;
 use crate::rect::Rect;
 use crate::{Coord, Shape};
 #[cfg(feature = "serde_derive")]
@@ -132,6 +133,39 @@ impl Shape for Triangle {
     fn center(&self) -> Coord {
         self.center
     }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        self.as_lines()
+            .iter()
+            .flat_map(|line| line.outline_points())
+            .collect()
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+        let mut sorted_points = self.points.to_vec();
+        sorted_points.sort_by_key(|c| c.y);
+        let points = [
+            (sorted_points[0].x as f32, sorted_points[0].y as f32),
+            (sorted_points[1].x as f32, sorted_points[1].y as f32),
+            (sorted_points[2].x as f32, sorted_points[2].y as f32),
+        ];
+        if points[1].1 == points[2].1 {
+            draw_flat_bottom(&mut output, points);
+        } else if points[0].1 == points[1].1 {
+            draw_flat_top(&mut output, points);
+        } else {
+            let p = (
+                points[0].0
+                    + ((points[1].1 - points[0].1) / (points[2].1 - points[0].1))
+                        * (points[2].0 - points[0].0),
+                points[1].1,
+            );
+            draw_flat_bottom(&mut output, [points[0], points[1], p]);
+            draw_flat_top(&mut output, [points[1], p, points[2]]);
+        }
+        output
+    }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
@@ -154,6 +188,16 @@ impl Triangle {
     #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
+    }
+
+    #[must_use]
+    pub fn as_lines(&self) -> [Line; 3] {
+        let points = self.points();
+        [
+            Line::new(points[0], points[1]),
+            Line::new(points[1], points[2]),
+            Line::new(points[2], points[0]),
+        ]
     }
 
     #[must_use]
@@ -194,6 +238,36 @@ impl Triangle {
             FlatSide::Left => Triangle::new((left, top), (left, bottom), (right, point.y)),
             FlatSide::Right => Triangle::new((right, top), (right, bottom), (left, point.y)),
         }
+    }
+}
+
+pub fn draw_flat_bottom(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
+    let slope1 = (points[1].0 - points[0].0) / (points[1].1 - points[0].1);
+    let slope2 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
+    let mut x1 = points[0].0;
+    let mut x2 = points[0].0;
+    for y in (points[0].1 as usize)..(points[1].1 as usize) {
+        let start = x1.min(x2) as isize;
+        let end = x1.max(x2) as isize + 1;
+        let line_points = Line::new((start, y as isize), (end, y as isize)).outline_points();
+        output.extend_from_slice(&line_points);
+        x1 += slope1;
+        x2 += slope2;
+    }
+}
+
+pub fn draw_flat_top(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
+    let slope1 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
+    let slope2 = (points[2].0 - points[1].0) / (points[2].1 - points[1].1);
+    let mut x1 = points[2].0;
+    let mut x2 = points[2].0;
+    for y in ((points[0].1 as usize)..(points[2].1 as usize)).rev() {
+        let start = x1.min(x2) as usize;
+        let end = x1.max(x2) as usize + 1;
+        let line_points = Line::new((start, y), (end, y)).outline_points();
+        output.extend_from_slice(&line_points);
+        x1 -= slope1;
+        x2 -= slope2;
     }
 }
 

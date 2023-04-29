@@ -99,6 +99,78 @@ impl Shape for Ellipse {
     fn bottom(&self) -> isize {
         self.center.y + (self.height as isize) / 2
     }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        let center_x = self.center.x;
+        let center_y = self.center.y;
+        let rx = (self.width / 2) as f32;
+        let ry = (self.height / 2) as f32;
+        let mut output = vec![];
+
+        let mut x = 0;
+        let mut y = ry as isize;
+        let mut p1 = ry * ry - (rx * rx) * ry + (rx * rx) * (0.25);
+        let mut dx = 2.0 * (ry * ry) * (x as f32);
+        let mut dy = 2.0 * (rx * rx) * (y as f32);
+        while dx < dy {
+            output.push(Coord::new(center_x + x, center_y + y));
+            output.push(Coord::new(center_x - x, center_y + y));
+            output.push(Coord::new(center_x + x, center_y - y));
+            output.push(Coord::new(center_x - x, center_y - y));
+            if p1 < 0.0 {
+                x += 1;
+                dx = 2.0 * (ry * ry) * (x as f32);
+                p1 += dx + (ry * ry);
+            } else {
+                x += 1;
+                y -= 1;
+                dx = 2.0 * (ry * ry) * (x as f32);
+                dy = 2.0 * (rx * rx) * (y as f32);
+                p1 += dx - dy + (ry * ry);
+            }
+        }
+        let mut p2 = (ry * ry) * ((x as f32) + 0.5) * ((x as f32) + 0.5)
+            + (rx * rx) * ((y as f32) - 1.0) * ((y as f32) - 1.0)
+            - (rx * rx) * (ry * ry);
+
+        while y >= 0 {
+            output.push(Coord::new(center_x + x, center_y + y));
+            output.push(Coord::new(center_x - x, center_y + y));
+            output.push(Coord::new(center_x + x, center_y - y));
+            output.push(Coord::new(center_x - x, center_y - y));
+            if p2 > 0.0 {
+                y -= 1;
+                dy = 2.0 * (rx * rx) * (y as f32);
+                p2 -= dy + (rx * rx);
+            } else {
+                x += 1;
+                y -= 1;
+                dy -= 2.0 * (rx * rx);
+                dx += 2.0 * (ry * ry);
+                p2 += dx - dy + (rx * rx);
+            }
+        }
+
+        output
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+        let height = self.height as isize / 2;
+        let width = self.width as isize / 2;
+        let height_sq = height * height;
+        let width_sq = width * width;
+        let limit = height_sq * width_sq;
+        for y in -height..height {
+            let y_amount = y * y * width_sq;
+            for x in -width..width {
+                if x * x * height_sq + y_amount <= limit {
+                    output.push(Coord::new(self.center.x + x, self.center.y + y));
+                }
+            }
+        }
+        output
+    }
 }
 
 impl Ellipse {

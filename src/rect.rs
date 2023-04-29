@@ -120,6 +120,43 @@ impl Shape for Rect {
     fn bottom(&self) -> isize {
         self.top_left.y.max(self.bottom_right.y)
     }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+
+        let left = self.left();
+        let right = self.right();
+        let top = self.top();
+        let bottom = self.bottom();
+
+        for x in left..right {
+            output.push(Coord::new(x, top));
+            output.push(Coord::new(x, bottom));
+        }
+        for y in top..=bottom {
+            output.push(Coord::new(left, y));
+            output.push(Coord::new(right, y));
+        }
+
+        output
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+
+        let left = self.left();
+        let right = self.right();
+        let top = self.top();
+        let bottom = self.bottom();
+
+        for y in top..=bottom {
+            for x in left..right {
+                output.push(Coord::new(x, y));
+            }
+        }
+
+        output
+    }
 }
 
 impl Rect {

@@ -1,4 +1,5 @@
 use crate::circle::Circle;
+use crate::line::Line;
 use crate::rect::Rect;
 use crate::triangle::Triangle;
 use crate::{Coord, Shape};
@@ -111,6 +112,57 @@ impl Shape for Polygon {
     fn center(&self) -> Coord {
         self.center
     }
+
+    fn outline_points(&self) -> Vec<Coord> {
+        self.as_lines()
+            .iter()
+            .flat_map(|line| line.outline_points())
+            .collect()
+    }
+
+    fn filled_points(&self) -> Vec<Coord> {
+        let mut output = vec![];
+        let poly: Vec<(f32, f32)> = self
+            .points
+            .iter()
+            .map(|c| (c.x as f32, c.y as f32))
+            .collect();
+        let y_start = self.top();
+        let y_end = self.bottom();
+        for y in y_start..y_end {
+            let mut node = vec![];
+            let mut node_count = 0;
+            let y = y as f32;
+            let mut j = poly.len() - 1;
+            for i in 0..poly.len() {
+                if poly[i].1 < y && poly[j].1 >= y || poly[j].1 < y && poly[i].1 >= y {
+                    node.push(
+                        poly[i].0
+                            + (y - poly[i].1) / (poly[j].1 - poly[i].1) * (poly[j].0 - poly[i].0),
+                    );
+                    node_count += 1;
+                }
+                j = i;
+            }
+            let mut i = 0;
+            if node_count > 0 {
+                while i < (node_count - 1) {
+                    if node[i] > node[i + 1] {
+                        node.swap(i, i + 1);
+                        i = i.saturating_sub(1);
+                    } else {
+                        i += 1;
+                    }
+                }
+                for i in (0..node_count - 1).step_by(2) {
+                    for x in (node[i] as isize)..(node[i + 1] as isize) {
+                        output.push(Coord::new(x + 1, y as isize));
+                    }
+                }
+            }
+        }
+        output
+    }
 }
 
 impl Polygon {
@@ -147,6 +199,17 @@ impl Polygon {
     #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
+    }
+
+    #[must_use]
+    pub fn as_lines(&self) -> Vec<Line> {
+        let mut lines = vec![];
+        let poly = self.points.clone();
+        for i in 0..poly.len() - 1 {
+            lines.push(Line::new(poly[i], poly[i + 1]));
+        }
+        lines.push(Line::new(poly[poly.len() - 1], poly[0]));
+        lines
     }
 
     /// Cuts shape into triangles, triangles will be from the center to the edge

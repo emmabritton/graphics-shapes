@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.12
+- Add `outline_points` and `filled_points` for shapes
+
 ### Version 0.1.11
 - Fix bug with multiplying coords and floats
 - Add `Shape::move_center_to`

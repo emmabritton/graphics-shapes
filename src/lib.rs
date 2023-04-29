@@ -162,6 +162,16 @@ pub trait Shape {
         let points = scale_points(point.into(), &self.points(), factor);
         Self::from_points(&points)
     }
+
+    /// the coords for drawing the shape outline, the points may be in any order
+    /// this should be cached rather than called per frame
+    #[must_use]
+    fn outline_points(&self) -> Vec<Coord>;
+
+    /// the coords for drawing the filled shape, the points may be in any order
+    /// this should be cached rather than called per frame
+    #[must_use]
+    fn filled_points(&self) -> Vec<Coord>;
 }
 
 // pub trait Intersects<T> {
