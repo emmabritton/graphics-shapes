@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use crate::circle::Circle;
 use crate::coord::Coord;
 use crate::ellipse::Ellipse;
@@ -122,7 +123,7 @@ impl Shape for Rect {
     }
 
     fn outline_points(&self) -> Vec<Coord> {
-        let mut output = vec![];
+        let mut output = HashSet::new();
 
         let left = self.left();
         let right = self.right();
@@ -130,19 +131,19 @@ impl Shape for Rect {
         let bottom = self.bottom();
 
         for x in left..=right {
-            output.push(Coord::new(x, top));
-            output.push(Coord::new(x, bottom));
+            output.insert(Coord::new(x, top));
+            output.insert(Coord::new(x, bottom));
         }
         for y in top..=bottom {
-            output.push(Coord::new(left, y));
-            output.push(Coord::new(right, y));
+            output.insert(Coord::new(left, y));
+            output.insert(Coord::new(right, y));
         }
 
-        output
+        output.into_iter().collect()
     }
 
     fn filled_points(&self) -> Vec<Coord> {
-        let mut output = vec![];
+        let mut output = HashSet::new();
 
         let left = self.left();
         let right = self.right();
@@ -151,11 +152,11 @@ impl Shape for Rect {
 
         for y in top..=bottom {
             for x in left..=right {
-                output.push(Coord::new(x, y));
+                output.insert(Coord::new(x, y));
             }
         }
 
-        output
+        output.into_iter().collect()
     }
 }
 
@@ -196,5 +197,35 @@ impl Rect {
     #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
         Ellipse::from_points(&self.points())
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::test::check_points;
+    use super::*;
+
+    #[test]
+    fn basic_outline() {
+        let rect = Rect::new((0, 0), (4, 4));
+        let points = rect.outline_points();
+        check_points(&[
+            (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
+            (0, 1), (4, 1),
+            (0, 2), (4, 2),
+            (0, 3), (4, 3),
+            (0, 4), (1, 4), (2, 4), (3, 4), (4, 4),
+        ], &points);
+    }
+
+    #[test]
+    fn basic_filled() {
+        let rect = Rect::new((3, 2), (6, 4));
+        let points = rect.filled_points();
+        check_points(&[
+            (3, 2), (4, 2) , (5, 2), (6, 2),
+            (3, 3), (4, 3) , (5, 3), (6, 3),
+            (3, 4), (4, 4) , (5, 4), (6, 4),
+        ], &points);
     }
 }

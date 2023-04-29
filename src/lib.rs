@@ -179,3 +179,30 @@ pub trait Shape {
 //     #[must_use]
 //     fn intersects(&self, shape: T) -> bool;
 // }
+
+#[cfg(test)]
+mod test {
+    use crate::coord::Coord;
+
+    pub fn check_points(expected: &[(isize, isize)], actual: &[Coord]) {
+        let mut expected: Vec<Coord> = expected.iter().map(|(x,y)| Coord::new(*x as isize, *y as isize)).collect();
+        let mut unexpected = vec![];
+        for point in actual {
+            if let Some(i) =  expected.iter().position(|p| p == point) {
+                expected.remove(i);
+            } else {
+                unexpected.push(point);
+            }
+        }
+        let mut message = String::new();
+        if !expected.is_empty() {
+            message.push_str(&format!("Points not found: {:?}", expected));
+        }
+        if !unexpected.is_empty() {
+            message.push_str(&format!("Points unexpectedly found: {:?}", unexpected));
+        }
+        if !message.is_empty() {
+            panic!("{message}");
+        }
+    }
+}
