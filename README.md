@@ -2,7 +2,7 @@
 
 Contains code to make and alter lines, rectangles, circles, triangles and polygons.
 
-Primarily designed to be use with [Buffer Graphics](https://github.com/emmabritton/buffer-graphics-lib) and [Graphics lib](https://github.com/emmabritton/rust-graphics-lib)
+Primarily designed to be use with [Buffer Graphics](https://github.com/emmabritton/buffer-graphics-lib) and [Pixels graphics lib](https://github.com/emmabritton/pixel-graphics-lib)
 
 ### Usage
 
@@ -13,7 +13,7 @@ graphics-shapes = "0.1.12"
 graphics-shapes = {version = "0.1.12", features = ["mint", "serde"] }
 ```
 
-### Code 
+### Examples 
 
 ```rust
 let rect = Rect::new((10,10),(20,20));
