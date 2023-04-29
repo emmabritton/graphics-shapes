@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.1.13
+- Fix typo in rect points
+
 ### Version 0.1.12
 - Add `outline_points` and `filled_points` for shapes
 

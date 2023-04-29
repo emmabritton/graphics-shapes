@@ -129,7 +129,7 @@ impl Shape for Rect {
         let top = self.top();
         let bottom = self.bottom();
 
-        for x in left..right {
+        for x in left..=right {
             output.push(Coord::new(x, top));
             output.push(Coord::new(x, bottom));
         }
@@ -150,7 +150,7 @@ impl Shape for Rect {
         let bottom = self.bottom();
 
         for y in top..=bottom {
-            for x in left..right {
+            for x in left..=right {
                 output.push(Coord::new(x, y));
             }
         }
