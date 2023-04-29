@@ -1,3 +1,6 @@
+[![Crates.io](https://img.shields.io/crates/v/graphics-shapes)](https://crates.io/crates/graphics-shapes "Crates.io version")
+[![Documentation](https://img.shields.io/docsrs/graphics-shapes)](https://docs.rs/graphics-shapes "Documentation")
+
 # Shapes for Graphics
 
 Contains code to make and alter lines, rectangles, circles, triangles and polygons.
