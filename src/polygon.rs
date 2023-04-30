@@ -113,14 +113,14 @@ impl Shape for Polygon {
         self.center
     }
 
-    fn outline_points(&self) -> Vec<Coord> {
+    fn outline_pixels(&self) -> Vec<Coord> {
         self.as_lines()
             .iter()
-            .flat_map(|line| line.outline_points())
+            .flat_map(|line| line.outline_pixels())
             .collect()
     }
 
-    fn filled_points(&self) -> Vec<Coord> {
+    fn filled_pixels(&self) -> Vec<Coord> {
         let mut output = vec![];
         let poly: Vec<(f32, f32)> = self
             .points

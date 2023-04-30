@@ -134,7 +134,7 @@ impl Shape for Line {
         self.end.y
     }
 
-    fn outline_points(&self) -> Vec<Coord> {
+    fn outline_pixels(&self) -> Vec<Coord> {
         let mut start = self.start;
         let mut end = self.end;
         if start.x > end.x || start.y > end.y {
@@ -194,8 +194,8 @@ impl Shape for Line {
         output
     }
 
-    fn filled_points(&self) -> Vec<Coord> {
-        self.outline_points()
+    fn filled_pixels(&self) -> Vec<Coord> {
+        self.outline_pixels()
     }
 }
 
@@ -238,5 +238,34 @@ mod test {
             Line::new((10, 10), (20, 10)).rotate(25),
             Line::new((10, 8), (20, 12))
         );
+    }
+
+    mod outline {
+        use crate::line::Line;
+        use crate::Shape;
+
+        #[test]
+        fn flat_horz_right() {
+            let points = Line::new((0, 0), (6, 0)).outline_pixels();
+            assert_eq!(points, coord_vec![(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]);
+        }
+
+        #[test]
+        fn flat_vert_down() {
+            let points = Line::new((0, 0), (0, 6)).outline_pixels();
+            assert_eq!(points, coord_vec![(0,0), (0,1), (0,2), (0,3), (0,4), (0,5), (0,6)]);
+        }
+
+        #[test]
+        fn flat_horz_left() {
+            let points = Line::new((0, 0), (-6, 0)).outline_pixels();
+            assert_eq!(points, coord_vec![(-6,0), (-5,0), (-4,0), (-3,0), (-2,0), (-1,0), (0,0)]);
+        }
+
+        #[test]
+        fn flat_vert_up() {
+            let points = Line::new((0, 0), (0, -6)).outline_pixels();
+            assert_eq!(points, coord_vec![(0,-6), (0,-5), (0,-4), (0,-3), (0,-2), (0,-1), (0,0)]);
+        }
     }
 }

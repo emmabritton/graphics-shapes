@@ -1,6 +1,7 @@
 use crate::line::Line;
 use crate::rect::Rect;
-use crate::{Coord, Shape};
+use crate::{new_hash_set, Coord, Shape};
+use fnv::FnvHashSet;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -134,15 +135,15 @@ impl Shape for Triangle {
         self.center
     }
 
-    fn outline_points(&self) -> Vec<Coord> {
+    fn outline_pixels(&self) -> Vec<Coord> {
         self.as_lines()
             .iter()
-            .flat_map(|line| line.outline_points())
+            .flat_map(|line| line.outline_pixels())
             .collect()
     }
 
-    fn filled_points(&self) -> Vec<Coord> {
-        let mut output = vec![];
+    fn filled_pixels(&self) -> Vec<Coord> {
+        let mut output = new_hash_set();
         let mut sorted_points = self.points.to_vec();
         sorted_points.sort_by_key(|c| c.y);
         let points = [
@@ -164,7 +165,7 @@ impl Shape for Triangle {
             draw_flat_bottom(&mut output, [points[0], points[1], p]);
             draw_flat_top(&mut output, [points[1], p, points[2]]);
         }
-        output
+        output.into_iter().collect()
     }
 }
 
@@ -241,7 +242,7 @@ impl Triangle {
     }
 }
 
-pub fn draw_flat_bottom(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
+pub fn draw_flat_bottom(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
     let slope1 = (points[1].0 - points[0].0) / (points[1].1 - points[0].1);
     let slope2 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
     let mut x1 = points[0].0;
@@ -249,14 +250,16 @@ pub fn draw_flat_bottom(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
     for y in (points[0].1 as usize)..(points[1].1 as usize) {
         let start = x1.min(x2) as isize;
         let end = x1.max(x2) as isize + 1;
-        let line_points = Line::new((start, y as isize), (end, y as isize)).outline_points();
-        output.extend_from_slice(&line_points);
+        let line_points = Line::new((start, y as isize), (end, y as isize)).outline_pixels();
+        for point in line_points {
+            output.insert(point);
+        }
         x1 += slope1;
         x2 += slope2;
     }
 }
 
-pub fn draw_flat_top(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
+pub fn draw_flat_top(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
     let slope1 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
     let slope2 = (points[2].0 - points[1].0) / (points[2].1 - points[1].1);
     let mut x1 = points[2].0;
@@ -264,8 +267,10 @@ pub fn draw_flat_top(output: &mut Vec<Coord>, points: [(f32, f32); 3]) {
     for y in ((points[0].1 as usize)..(points[2].1 as usize)).rev() {
         let start = x1.min(x2) as usize;
         let end = x1.max(x2) as usize + 1;
-        let line_points = Line::new((start, y), (end, y)).outline_points();
-        output.extend_from_slice(&line_points);
+        let line_points = Line::new((start, y), (end, y)).outline_pixels();
+        for point in line_points {
+            output.insert(point);
+        }
         x1 -= slope1;
         x2 -= slope2;
     }

@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 0.1.14
+- Add `coord_vec` macro that creats a `Vec<Coord>` from any number of expressions that can converted to Coords using `Coord::from`
+- Rename `outline_points` and `filled_points` to `outline_pixels` and `filled_pixels`
+- Remove duplicate pixels from `*_pixels` methods
+
 ### Version 0.1.13
 - Fix typo in rect points
 

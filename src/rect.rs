@@ -1,10 +1,9 @@
-use std::collections::HashSet;
 use crate::circle::Circle;
 use crate::coord::Coord;
 use crate::ellipse::Ellipse;
 use crate::polygon::Polygon;
 use crate::triangle::Triangle;
-use crate::{rotate_points, Shape};
+use crate::{new_hash_set, rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
@@ -122,8 +121,8 @@ impl Shape for Rect {
         self.top_left.y.max(self.bottom_right.y)
     }
 
-    fn outline_points(&self) -> Vec<Coord> {
-        let mut output = HashSet::new();
+    fn outline_pixels(&self) -> Vec<Coord> {
+        let mut output = new_hash_set();
 
         let left = self.left();
         let right = self.right();
@@ -142,8 +141,8 @@ impl Shape for Rect {
         output.into_iter().collect()
     }
 
-    fn filled_points(&self) -> Vec<Coord> {
-        let mut output = HashSet::new();
+    fn filled_pixels(&self) -> Vec<Coord> {
+        let mut output = new_hash_set();
 
         let left = self.left();
         let right = self.right();
@@ -202,30 +201,81 @@ impl Rect {
 
 #[cfg(test)]
 mod test {
-    use crate::test::check_points;
     use super::*;
+    use crate::test::check_points;
+
+    mod rotation {
+        use crate::rect::Rect;
+        use crate::Shape;
+
+        #[test]
+        fn rotate_square_around_bottom_right_corner_90_degrees_twice() {
+            let square = Rect::new((0, 0), (20, 20));
+            let rotated = square.rotate_around(90, (20, 20));
+
+            assert_eq!(rotated.points(), coord_vec![(40, 0), (20, 20)]);
+
+            let rotated_again = rotated.rotate_around(90, (20, 20));
+
+            assert_eq!(rotated_again.points(), coord_vec![(40, 40), (20, 20)])
+        }
+
+        #[test]
+        fn rotate_rect_around_center_90_degrees() {
+            let rect = Rect::new((0, 0), (40, 20));
+            let rotated = rect.rotate(90);
+
+            assert_eq!(rotated.points(), coord_vec![(30,-10),(10,30)]);
+        }
+    }
 
     #[test]
     fn basic_outline() {
         let rect = Rect::new((0, 0), (4, 4));
-        let points = rect.outline_points();
-        check_points(&[
-            (0, 0), (1, 0), (2, 0), (3, 0), (4, 0),
-            (0, 1), (4, 1),
-            (0, 2), (4, 2),
-            (0, 3), (4, 3),
-            (0, 4), (1, 4), (2, 4), (3, 4), (4, 4),
-        ], &points);
+        let points = rect.outline_pixels();
+        check_points(
+            &[
+                (0, 0),
+                (1, 0),
+                (2, 0),
+                (3, 0),
+                (4, 0),
+                (0, 1),
+                (4, 1),
+                (0, 2),
+                (4, 2),
+                (0, 3),
+                (4, 3),
+                (0, 4),
+                (1, 4),
+                (2, 4),
+                (3, 4),
+                (4, 4),
+            ],
+            &points,
+        );
     }
 
     #[test]
     fn basic_filled() {
         let rect = Rect::new((3, 2), (6, 4));
-        let points = rect.filled_points();
-        check_points(&[
-            (3, 2), (4, 2) , (5, 2), (6, 2),
-            (3, 3), (4, 3) , (5, 3), (6, 3),
-            (3, 4), (4, 4) , (5, 4), (6, 4),
-        ], &points);
+        let points = rect.filled_pixels();
+        check_points(
+            &[
+                (3, 2),
+                (4, 2),
+                (5, 2),
+                (6, 2),
+                (3, 3),
+                (4, 3),
+                (5, 3),
+                (6, 3),
+                (3, 4),
+                (4, 4),
+                (5, 4),
+                (6, 4),
+            ],
+            &points,
+        );
     }
 }

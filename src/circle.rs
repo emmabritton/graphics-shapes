@@ -2,7 +2,7 @@ use crate::coord::Coord;
 use crate::ellipse::Ellipse;
 use crate::line::Line;
 use crate::rect::Rect;
-use crate::Shape;
+use crate::{new_hash_set, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -88,23 +88,23 @@ impl Shape for Circle {
         self.center.y + (self.radius as isize)
     }
 
-    fn outline_points(&self) -> Vec<Coord> {
+    fn outline_pixels(&self) -> Vec<Coord> {
         let cx = self.center.x;
         let cy = self.center.y;
         let mut d = (5_isize - (self.radius as isize) * 4) / 4;
         let mut x = 0;
         let mut y = self.radius as isize;
-        let mut output = vec![];
+        let mut output = new_hash_set();
 
         while x <= y {
-            output.push(Coord::new(cx + x, cy + y));
-            output.push(Coord::new(cx + x, cy - y));
-            output.push(Coord::new(cx - x, cy + y));
-            output.push(Coord::new(cx - x, cy - y));
-            output.push(Coord::new(cx + y, cy + x));
-            output.push(Coord::new(cx + y, cy - x));
-            output.push(Coord::new(cx - y, cy + x));
-            output.push(Coord::new(cx - y, cy - x));
+            output.insert(Coord::new(cx + x, cy + y));
+            output.insert(Coord::new(cx + x, cy - y));
+            output.insert(Coord::new(cx - x, cy + y));
+            output.insert(Coord::new(cx - x, cy - y));
+            output.insert(Coord::new(cx + y, cy + x));
+            output.insert(Coord::new(cx + y, cy - x));
+            output.insert(Coord::new(cx - y, cy + x));
+            output.insert(Coord::new(cx - y, cy - x));
             if d < 0 {
                 d += 2 * x + 1
             } else {
@@ -114,11 +114,11 @@ impl Shape for Circle {
             x += 1;
         }
 
-        output
+        output.into_iter().collect()
     }
 
-    fn filled_points(&self) -> Vec<Coord> {
-        let mut output = vec![];
+    fn filled_pixels(&self) -> Vec<Coord> {
+        let mut output = new_hash_set();
         let cx = self.center.x;
         let cy = self.center.y;
         let squared_radius = (self.radius * self.radius) as isize;
@@ -129,13 +129,13 @@ impl Shape for Circle {
             for x in 0..=half_width {
                 let left = cx - x;
                 let right = cx + x;
-                output.push(Coord::new(left, up));
-                output.push(Coord::new(right, up));
-                output.push(Coord::new(left, down));
-                output.push(Coord::new(right, down));
+                output.insert(Coord::new(left, up));
+                output.insert(Coord::new(right, up));
+                output.insert(Coord::new(left, down));
+                output.insert(Coord::new(right, down));
             }
         }
-        output
+        output.into_iter().collect()
     }
 }
 
