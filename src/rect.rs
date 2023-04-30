@@ -225,7 +225,7 @@ mod test {
             let rect = Rect::new((0, 0), (40, 20));
             let rotated = rect.rotate(90);
 
-            assert_eq!(rotated.points(), coord_vec![(30,-10),(10,30)]);
+            assert_eq!(rotated.points(), coord_vec![(30, -10), (10, 30)]);
         }
     }
 

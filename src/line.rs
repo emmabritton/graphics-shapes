@@ -247,25 +247,37 @@ mod test {
         #[test]
         fn flat_horz_right() {
             let points = Line::new((0, 0), (6, 0)).outline_pixels();
-            assert_eq!(points, coord_vec![(0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)]);
+            assert_eq!(
+                points,
+                coord_vec![(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0)]
+            );
         }
 
         #[test]
         fn flat_vert_down() {
             let points = Line::new((0, 0), (0, 6)).outline_pixels();
-            assert_eq!(points, coord_vec![(0,0), (0,1), (0,2), (0,3), (0,4), (0,5), (0,6)]);
+            assert_eq!(
+                points,
+                coord_vec![(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6)]
+            );
         }
 
         #[test]
         fn flat_horz_left() {
             let points = Line::new((0, 0), (-6, 0)).outline_pixels();
-            assert_eq!(points, coord_vec![(-6,0), (-5,0), (-4,0), (-3,0), (-2,0), (-1,0), (0,0)]);
+            assert_eq!(
+                points,
+                coord_vec![(-6, 0), (-5, 0), (-4, 0), (-3, 0), (-2, 0), (-1, 0), (0, 0)]
+            );
         }
 
         #[test]
         fn flat_vert_up() {
             let points = Line::new((0, 0), (0, -6)).outline_pixels();
-            assert_eq!(points, coord_vec![(0,-6), (0,-5), (0,-4), (0,-3), (0,-2), (0,-1), (0,0)]);
+            assert_eq!(
+                points,
+                coord_vec![(0, -6), (0, -5), (0, -4), (0, -3), (0, -2), (0, -1), (0, 0)]
+            );
         }
     }
 }
