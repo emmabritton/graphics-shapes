@@ -4,6 +4,7 @@ use mint::Point2;
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
+/// Represents a 2D point
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Coord {
@@ -338,8 +339,66 @@ int_mul!(isize);
 float_mul!(f32);
 float_mul!(f64);
 
+/// Create a list of [Coord]s
+///
+/// # Example
+/// ```rust
+///# use graphics_shapes::coord::Coord;
+///# use graphics_shapes::coord_vec;
+/// let list = coord_vec![(5.0,6.0), (1_usize,2), Coord::new(-4,1)];
+/// assert_eq!(list, vec![Coord::new(5,6), Coord::new(1,2), Coord::new(-4,1)]);
+/// ```
+#[macro_export]
+macro_rules! coord_vec {
+    () => (
+        Vec::<$crate::coord::Coord>::new()
+    );
+    ($first:expr) => (
+        vec![$crate::coord::Coord::from($first)]
+    );
+    ($first:expr, $($vararg:expr),+) => (
+        vec![$crate::coord::Coord::from($first), $($crate::coord::Coord::from($vararg)),*]
+    );
+}
+
 #[cfg(test)]
 mod test {
+    mod list {
+        use crate::coord::Coord;
+
+        #[test]
+        fn empty() {
+            let list = coord_vec![];
+            assert_eq!(list, vec![]);
+        }
+
+        #[test]
+        fn one() {
+            let list = coord_vec![Coord::new(1, 1)];
+            assert_eq!(list, vec![Coord::new(1, 1)]);
+
+            let list = coord_vec![(4.0, 2.0)];
+            assert_eq!(list, vec![Coord::new(4, 2)]);
+        }
+
+        #[test]
+        fn many() {
+            let list = coord_vec![(-1_isize, 1), (9_usize, 4)];
+            assert_eq!(list, vec![Coord::new(-1, 1), Coord::new(9, 4)]);
+
+            let list = coord_vec![(-1, 1), (9_usize, 4), (5, 6), (9, 8)];
+            assert_eq!(
+                list,
+                vec![
+                    Coord::new(-1, 1),
+                    Coord::new(9, 4),
+                    Coord::new(5, 6),
+                    Coord::new(9, 8)
+                ]
+            );
+        }
+    }
+
     mod point_on_circle {
         use crate::Coord;
 

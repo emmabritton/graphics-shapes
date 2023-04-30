@@ -21,8 +21,10 @@
 
 use crate::coord::Coord;
 use crate::general_math::{rotate_points, scale_points};
+use fnv::FnvHashSet;
 
 pub mod circle;
+#[macro_use]
 pub mod coord;
 pub mod ellipse;
 mod general_math;
@@ -44,7 +46,7 @@ pub mod prelude {
 }
 
 pub trait Shape {
-    /// create this shape from a list of points
+    /// create this shape from a list of points (corners of a shape or tips of a line)
     #[must_use]
     fn from_points(points: &[Coord]) -> Self
     where
@@ -75,7 +77,7 @@ pub trait Shape {
         self.translate_by(diff)
     }
 
-    /// moves the shapes centerto `point`
+    /// moves the shapes center to `point`
     /// (and changes every other point to match their original distance and angle)
     ///
     /// As this moves relative to self.points()[0] the result might be unexpected if the shape was created
@@ -93,7 +95,7 @@ pub trait Shape {
     #[must_use]
     fn contains<P: Into<Coord>>(&self, point: P) -> bool;
 
-    /// points(corners) the shape is made of
+    /// points(corners/ends) the shape is made of
     #[must_use]
     fn points(&self) -> Vec<Coord>;
 
@@ -166,12 +168,16 @@ pub trait Shape {
     /// the coords for drawing the shape outline, the points may be in any order
     /// this should be cached rather than called per frame
     #[must_use]
-    fn outline_points(&self) -> Vec<Coord>;
+    fn outline_pixels(&self) -> Vec<Coord>;
 
     /// the coords for drawing the filled shape, the points may be in any order
     /// this should be cached rather than called per frame
     #[must_use]
-    fn filled_points(&self) -> Vec<Coord>;
+    fn filled_pixels(&self) -> Vec<Coord>;
+}
+
+fn new_hash_set() -> FnvHashSet<Coord> {
+    FnvHashSet::default()
 }
 
 // pub trait Intersects<T> {
@@ -185,10 +191,13 @@ mod test {
     use crate::coord::Coord;
 
     pub fn check_points(expected: &[(isize, isize)], actual: &[Coord]) {
-        let mut expected: Vec<Coord> = expected.iter().map(|(x,y)| Coord::new(*x as isize, *y as isize)).collect();
+        let mut expected: Vec<Coord> = expected
+            .iter()
+            .map(|(x, y)| Coord::new(*x as isize, *y as isize))
+            .collect();
         let mut unexpected = vec![];
         for point in actual {
-            if let Some(i) =  expected.iter().position(|p| p == point) {
+            if let Some(i) = expected.iter().position(|p| p == point) {
                 expected.remove(i);
             } else {
                 unexpected.push(point);
