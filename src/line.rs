@@ -15,6 +15,7 @@ pub enum LineType {
     Angled,
 }
 
+#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Line {
     start: Coord,
@@ -32,9 +33,9 @@ impl Line {
         let line_type = if start == end {
             LineType::Point
         } else if start.x == end.x {
-            LineType::Horizontal
-        } else if start.y == end.y {
             LineType::Vertical
+        } else if start.y == end.y {
+            LineType::Horizontal
         } else {
             LineType::Angled
         };
@@ -81,6 +82,12 @@ impl Line {
     pub fn line_type(&self) -> LineType {
         self.line_type
     }
+
+    /// Make `start` the top left and `end` the bottom right
+    #[must_use]
+    pub fn ordered(&self) -> Line {
+        Line::new(self.top_left(), self.bottom_right())
+    }
 }
 
 impl Shape for Line {
@@ -94,15 +101,16 @@ impl Shape for Line {
 
     fn contains<P: Into<Coord>>(&self, point: P) -> bool {
         let point = point.into();
+        let temp = self.ordered();
         match self.line_type {
-            LineType::Point => self.start == point,
+            LineType::Point => temp.start == point,
             LineType::Horizontal => {
-                self.start.y == point.y && self.start.x <= point.x && point.x <= self.end.x
+                temp.start.y == point.y && temp.start.x <= point.x && point.x <= temp.end.x
             }
             LineType::Vertical => {
-                self.start.x == point.x && self.start.y <= point.y && point.y <= self.end.y
+                temp.start.x == point.x && temp.start.y <= point.y && point.y <= temp.end.y
             }
-            LineType::Angled => self.start.distance(point) + self.end.distance(point) == self.len,
+            LineType::Angled => temp.start.distance(point) + temp.end.distance(point) == temp.len,
         }
     }
 
@@ -116,22 +124,22 @@ impl Shape for Line {
 
     #[inline]
     fn left(&self) -> isize {
-        self.start.x
+        self.start.x.min(self.end.x)
     }
 
     #[inline]
     fn right(&self) -> isize {
-        self.end.x
+        self.start.x.max(self.end.x)
     }
 
     #[inline]
     fn top(&self) -> isize {
-        self.start.y
+        self.start.y.min(self.end.y)
     }
 
     #[inline]
     fn bottom(&self) -> isize {
-        self.end.y
+        self.start.y.max(self.end.y)
     }
 
     fn outline_pixels(&self) -> Vec<Coord> {
@@ -238,6 +246,42 @@ mod test {
             Line::new((10, 10), (20, 10)).rotate(25),
             Line::new((10, 8), (20, 12))
         );
+    }
+
+    mod contains {
+        use crate::line::Line;
+        use crate::Shape;
+
+        #[test]
+        fn point() {
+            let line = Line::new((10,10),(10,10));
+            assert!(line.contains((10,10)));
+            assert!(!line.contains((11,10)));
+        }
+
+        #[test]
+        fn vert() {
+            let line = Line::new((10,10),(10,20));
+            assert!(line.contains((10,14)));
+            assert!(!line.contains((10,24)));
+            assert!(!line.contains((11,14)));
+        }
+
+        #[test]
+        fn horz() {
+            let line = Line::new((10,10),(0,10));
+            assert!(line.contains((5,10)));
+            assert!(!line.contains((-1,10)));
+            assert!(!line.contains((5,11)));
+        }
+
+        #[test]
+        fn angle() {
+            let line = Line::new((0,0),(10,10));
+            assert!(line.contains((5,5)));
+            assert!(!line.contains((6,6)));
+            assert!(!line.contains((11,11)));
+        }
     }
 
     mod outline {
