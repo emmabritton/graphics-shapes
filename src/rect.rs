@@ -7,6 +7,7 @@ use crate::{new_hash_set, rotate_points, Shape};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
+use crate::line::Line;
 
 /// Rectangle
 ///
@@ -196,6 +197,16 @@ impl Rect {
     #[must_use]
     pub fn as_ellipse(&self) -> Ellipse {
         Ellipse::from_points(&self.points())
+    }
+
+    #[must_use]
+    pub fn as_lines(&self) -> [Line; 4] {
+        [
+            Line::new(self.top_left(), self.top_right()),
+            Line::new(self.top_right(), self.bottom_right()),
+            Line::new(self.bottom_right(), self.bottom_left()),
+            Line::new(self.bottom_left(), self.top_left()),
+        ]
     }
 }
 

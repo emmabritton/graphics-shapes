@@ -91,15 +91,15 @@ pub trait Shape {
         self.translate_by(diff)
     }
 
-    /// returns true if the shape contains point
+    /// Returns true if the shape contains point
     #[must_use]
     fn contains<P: Into<Coord>>(&self, point: P) -> bool;
 
-    /// points(corners/ends) the shape is made of
+    /// Points(corners/ends) the shape is made of
     #[must_use]
     fn points(&self) -> Vec<Coord>;
 
-    /// rotate shape around it's center
+    /// Rotate shape around it's center
     #[must_use]
     fn rotate(&self, degrees: isize) -> Self
     where
@@ -108,7 +108,7 @@ pub trait Shape {
         self.rotate_around(degrees, self.center())
     }
 
-    /// rotate shape around a point
+    /// Rotate shape around a point
     #[must_use]
     fn rotate_around<P: Into<Coord>>(&self, degrees: isize, point: P) -> Self
     where
@@ -118,7 +118,7 @@ pub trait Shape {
         Self::from_points(&points)
     }
 
-    /// center of shape
+    /// Center of shape
     #[must_use]
     fn center(&self) -> Coord;
 
@@ -146,7 +146,27 @@ pub trait Shape {
         self.points().iter().map(|p| p.y).max().unwrap()
     }
 
-    /// scale the shape by factor (around the center, so the change will be uniform)
+    #[must_use]
+    fn top_left(&self) -> Coord {
+        Coord::new(self.left(), self.top())
+    }
+
+    #[must_use]
+    fn top_right(&self) -> Coord {
+        Coord::new(self.right(), self.top())
+    }
+
+    #[must_use]
+    fn bottom_left(&self) -> Coord {
+        Coord::new(self.left(), self.bottom())
+    }
+
+    #[must_use]
+    fn bottom_right(&self) -> Coord {
+        Coord::new(self.right(), self.bottom())
+    }
+
+    /// Scale the shape by factor (around the center, so the change will be uniform)
     #[must_use]
     fn scale(&self, factor: f32) -> Self
     where
@@ -155,7 +175,7 @@ pub trait Shape {
         self.scale_around(factor, self.center())
     }
 
-    /// scale the shape by factor around point
+    /// Scale the shape by factor around point
     #[must_use]
     fn scale_around<P: Into<Coord>>(&self, factor: f32, point: P) -> Self
     where
@@ -165,13 +185,13 @@ pub trait Shape {
         Self::from_points(&points)
     }
 
-    /// the coords for drawing the shape outline, the points may be in any order
-    /// this should be cached rather than called per frame
+    /// The coords for drawing the shape outline, the points may be in any order
+    /// This should be cached rather than called per frame
     #[must_use]
     fn outline_pixels(&self) -> Vec<Coord>;
 
-    /// the coords for drawing the filled shape, the points may be in any order
-    /// this should be cached rather than called per frame
+    /// The coords for drawing the filled shape, the points may be in any order
+    /// This should be cached rather than called per frame
     #[must_use]
     fn filled_pixels(&self) -> Vec<Coord>;
 }
@@ -179,12 +199,6 @@ pub trait Shape {
 fn new_hash_set() -> FnvHashSet<Coord> {
     FnvHashSet::default()
 }
-
-// pub trait Intersects<T> {
-//     /// returns true if `shape` intersects this shape
-//     #[must_use]
-//     fn intersects(&self, shape: T) -> bool;
-// }
 
 #[cfg(test)]
 mod test {

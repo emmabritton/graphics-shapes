@@ -15,6 +15,7 @@ pub enum TriangleAngleType {
     Other,
 }
 
+#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 pub enum TriangleSideType {
     Isosceles,
@@ -22,6 +23,7 @@ pub enum TriangleSideType {
     Equilateral,
 }
 
+#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Triangle {
     points: [Coord; 3],
