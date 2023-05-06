@@ -141,8 +141,23 @@ impl Shape for Circle {
 
 impl Circle {
     #[must_use]
+    #[deprecated(since = "0.2.0", note = "use as_outer_rect instead")]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
+    }
+
+    /// Rectangle that surrounds the circle
+    #[must_use]
+    pub fn as_outer_rect(&self) -> Rect {
+        Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
+    }
+
+    /// Rectangle that fits inside the circle
+    #[must_use]
+    pub fn as_inner_rect(&self) -> Rect {
+        let top_left = Coord::from_angle(self.center, self.radius, 315);
+        let bottom_right = Coord::from_angle(self.center, self.radius, 135);
+        Rect::new(top_left, bottom_right)
     }
 
     /// Create line from center to top edge at 0 degrees
@@ -151,11 +166,13 @@ impl Circle {
         Line::new((self.center.x, self.center.y), (self.center.x, self.top()))
     }
 
+    /// Line from left to right
     #[must_use]
     pub fn as_horizontal_line(&self) -> Line {
         Line::new((self.left(), self.center.y), (self.right(), self.center.y))
     }
 
+    /// Line from top to bottom
     #[must_use]
     pub fn as_vertical_line(&self) -> Line {
         Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
