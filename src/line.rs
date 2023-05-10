@@ -1,7 +1,4 @@
-use crate::circle::Circle;
-use crate::coord::Coord;
-use crate::rect::Rect;
-use crate::Shape;
+use crate::prelude::*;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::mem::swap;
@@ -9,9 +6,11 @@ use std::mem::swap;
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 pub enum LineType {
+    /// Single pixel
     Point,
     Horizontal,
     Vertical,
+    /// Anything other vertical or horizontal, see [angle][Line::angle]
     Angled,
 }
 
@@ -24,6 +23,8 @@ pub struct Line {
     line_type: LineType,
     angle: isize,
 }
+
+impl IntersectsContains for Line {}
 
 impl Line {
     #[must_use]
@@ -59,6 +60,7 @@ impl Line {
         self.len
     }
 
+    /// Angle from `start` point to `end` point
     #[inline]
     #[must_use]
     pub fn angle(&self) -> isize {
@@ -82,12 +84,6 @@ impl Line {
     pub fn line_type(&self) -> LineType {
         self.line_type
     }
-
-    /// Make `start` the top left and `end` the bottom right
-    #[must_use]
-    pub fn ordered(&self) -> Line {
-        Line::new(self.top_left(), self.bottom_right())
-    }
 }
 
 impl Shape for Line {
@@ -99,18 +95,17 @@ impl Shape for Line {
         Line::new(points[0], points[1])
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let point = point.into();
-        let temp = self.ordered();
+    fn contains(&self, point: Coord) -> bool {
+        let point = point;
         match self.line_type {
-            LineType::Point => temp.start == point,
+            LineType::Point => self.start == point,
             LineType::Horizontal => {
-                temp.start.y == point.y && temp.start.x <= point.x && point.x <= temp.end.x
+                self.start.y == point.y && (self.left()..=self.right()).contains(&point.x)
             }
             LineType::Vertical => {
-                temp.start.x == point.x && temp.start.y <= point.y && point.y <= temp.end.y
+                self.start.x == point.x && (self.top()..=self.bottom()).contains(&point.y)
             }
-            LineType::Angled => temp.start.distance(point) + temp.end.distance(point) == temp.len,
+            LineType::Angled => self.start.distance(point) + self.end.distance(point) == self.len,
         }
     }
 
@@ -142,6 +137,30 @@ impl Shape for Line {
         self.start.y.max(self.end.y)
     }
 
+    /// Returns left most point x and lowest y  (could be from `start` or `end` for both)
+    /// This doesn't really make sense for line as it may return (end.x, start.y) for example
+    fn top_left(&self) -> Coord {
+        coord!(self.left(), self.top())
+    }
+
+    /// Returns right most point x and lowest y  (could be from `start` or `end` for both)
+    /// This doesn't really make sense for line as it may return (start.x, end.y) for example
+    fn top_right(&self) -> Coord {
+        coord!(self.right(), self.top())
+    }
+
+    /// Returns left most point x and highest y  (could be from `start` or `end` for both)
+    /// This doesn't really make sense for line as it may return (start.x, end.y) for example
+    fn bottom_left(&self) -> Coord {
+        coord!(self.left(), self.bottom())
+    }
+
+    /// Returns right most point x and highest y  (could be from `start` or `end` for both)
+    /// This doesn't really make sense for line as it may return (start.x, end.y) for example
+    fn bottom_right(&self) -> Coord {
+        coord!(self.right(), self.bottom())
+    }
+
     fn outline_pixels(&self) -> Vec<Coord> {
         let mut start = self.start;
         let mut end = self.end;
@@ -151,11 +170,11 @@ impl Shape for Line {
         let mut output = vec![];
         if start.x == end.x {
             for y in start.y..=end.y {
-                output.push(Coord::new(start.x, y));
+                output.push(coord!(start.x, y));
             }
         } else if start.y == end.y {
             for x in start.x..=end.x {
-                output.push(Coord::new(x, start.y));
+                output.push(coord!(x, start.y));
             }
         } else {
             let mut delta = 0;
@@ -173,7 +192,7 @@ impl Shape for Line {
             let mut y = y1;
             if dx >= dy {
                 loop {
-                    output.push(Coord::new(x, y));
+                    output.push(coord!(x, y));
                     if x == x2 {
                         break;
                     }
@@ -186,7 +205,7 @@ impl Shape for Line {
                 }
             } else {
                 loop {
-                    output.push(Coord::new(x, y));
+                    output.push(coord!(x, y));
                     if y == y2 {
                         break;
                     }
@@ -250,37 +269,38 @@ mod test {
 
     mod contains {
         use crate::line::Line;
+        use crate::prelude::Coord;
         use crate::Shape;
 
         #[test]
         fn point() {
-            let line = Line::new((10,10),(10,10));
-            assert!(line.contains((10,10)));
-            assert!(!line.contains((11,10)));
+            let line = Line::new((10, 10), (10, 10));
+            assert!(line.contains(coord!(10, 10)));
+            assert!(!line.contains(coord!(11, 10)));
         }
 
         #[test]
         fn vert() {
-            let line = Line::new((10,10),(10,20));
-            assert!(line.contains((10,14)));
-            assert!(!line.contains((10,24)));
-            assert!(!line.contains((11,14)));
+            let line = Line::new((10, 10), (10, 20));
+            assert!(line.contains(coord!(10, 14)));
+            assert!(!line.contains(coord!(10, 24)));
+            assert!(!line.contains(coord!(11, 14)));
         }
 
         #[test]
         fn horz() {
-            let line = Line::new((10,10),(0,10));
-            assert!(line.contains((5,10)));
-            assert!(!line.contains((-1,10)));
-            assert!(!line.contains((5,11)));
+            let line = Line::new((10, 10), (0, 10));
+            assert!(line.contains(coord!(5, 10)));
+            assert!(!line.contains(coord!(-1, 10)));
+            assert!(!line.contains(coord!(5, 11)));
         }
 
         #[test]
         fn angle() {
-            let line = Line::new((0,0),(10,10));
-            assert!(line.contains((5,5)));
-            assert!(!line.contains((6,6)));
-            assert!(!line.contains((11,11)));
+            let line = Line::new((0, 0), (10, 10));
+            assert!(line.contains(coord!(5, 5)));
+            assert!(!line.contains(coord!(8, 7)));
+            assert!(!line.contains(coord!(11, 11)));
         }
     }
 

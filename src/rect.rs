@@ -1,13 +1,7 @@
-use crate::circle::Circle;
-use crate::coord::Coord;
-use crate::ellipse::Ellipse;
-use crate::polygon::Polygon;
-use crate::triangle::Triangle;
-use crate::{new_hash_set, rotate_points, Shape};
+use crate::prelude::*;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
-use crate::line::Line;
 
 /// Rectangle
 ///
@@ -18,6 +12,8 @@ pub struct Rect {
     top_left: Coord,
     bottom_right: Coord,
 }
+
+impl IntersectsContains for Rect {}
 
 impl Rect {
     #[must_use]
@@ -81,24 +77,22 @@ impl Shape for Rect {
         Rect::new(points[0], points[1])
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let point = point.into();
-        self.top_left.x <= point.x
-            && self.bottom_right.x > point.x
-            && self.top_left.y <= point.y
-            && self.bottom_right.y > point.y
+    fn contains(&self, point: Coord) -> bool {
+        let point = point;
+        (self.left()..=self.right()).contains(&point.x)
+            && (self.top()..=self.bottom()).contains(&point.y)
     }
 
     fn points(&self) -> Vec<Coord> {
         vec![self.top_left, self.bottom_right]
     }
 
-    fn rotate_around<P: Into<Coord>>(&self, degrees: isize, point: P) -> Self
+    fn rotate_around(&self, degrees: isize, point: Coord) -> Self
     where
         Self: Sized,
     {
         let degrees = (degrees as f32 / 90.0).round() as isize;
-        let points = rotate_points(point.into(), &self.points(), degrees * 90);
+        let points = rotate_points(point, &self.points(), degrees * 90);
         Self::from_points(&points)
     }
 
@@ -131,12 +125,12 @@ impl Shape for Rect {
         let bottom = self.bottom();
 
         for x in left..=right {
-            output.insert(Coord::new(x, top));
-            output.insert(Coord::new(x, bottom));
+            output.insert(coord!(x, top));
+            output.insert(coord!(x, bottom));
         }
         for y in top..=bottom {
-            output.insert(Coord::new(left, y));
-            output.insert(Coord::new(right, y));
+            output.insert(coord!(left, y));
+            output.insert(coord!(right, y));
         }
 
         output.into_iter().collect()
@@ -152,7 +146,7 @@ impl Shape for Rect {
 
         for y in top..=bottom {
             for x in left..=right {
-                output.insert(Coord::new(x, y));
+                output.insert(coord!(x, y));
             }
         }
 
@@ -178,8 +172,8 @@ impl Rect {
     /// Create two triangles
     #[must_use]
     pub fn as_triangles(&self) -> (Triangle, Triangle) {
-        let top_right = Coord::new(self.right(), self.top());
-        let bottom_left = Coord::new(self.left(), self.bottom());
+        let top_right = coord!(self.right(), self.top());
+        let bottom_left = coord!(self.left(), self.bottom());
         (
             Triangle::new(self.top_left(), top_right, bottom_left),
             Triangle::new(self.bottom_right(), top_right, bottom_left),
@@ -189,8 +183,8 @@ impl Rect {
     /// Same shape but represented as four points/lines instead of two points
     #[must_use]
     pub fn as_polygon(&self) -> Polygon {
-        let top_right = Coord::new(self.right(), self.top());
-        let bottom_left = Coord::new(self.left(), self.bottom());
+        let top_right = coord!(self.right(), self.top());
+        let bottom_left = coord!(self.left(), self.bottom());
         Polygon::new(&[self.top_left, top_right, self.bottom_right, bottom_left])
     }
 
@@ -216,17 +210,18 @@ mod test {
     use crate::test::check_points;
 
     mod rotation {
+        use crate::coord::Coord;
         use crate::rect::Rect;
         use crate::Shape;
 
         #[test]
         fn rotate_square_around_bottom_right_corner_90_degrees_twice() {
             let square = Rect::new((0, 0), (20, 20));
-            let rotated = square.rotate_around(90, (20, 20));
+            let rotated = square.rotate_around(90, coord!(20, 20));
 
             assert_eq!(rotated.points(), coord_vec![(40, 0), (20, 20)]);
 
-            let rotated_again = rotated.rotate_around(90, (20, 20));
+            let rotated_again = rotated.rotate_around(90, coord!(20, 20));
 
             assert_eq!(rotated_again.points(), coord_vec![(40, 40), (20, 20)])
         }

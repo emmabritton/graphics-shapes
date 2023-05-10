@@ -1,6 +1,4 @@
-use crate::line::Line;
-use crate::rect::Rect;
-use crate::{new_hash_set, Coord, Shape};
+use crate::prelude::*;
 use fnv::FnvHashSet;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
@@ -32,6 +30,8 @@ pub struct Triangle {
     side_type: TriangleSideType,
     center: Coord,
 }
+
+impl IntersectsContains for Triangle {}
 
 impl Triangle {
     #[must_use]
@@ -74,10 +74,10 @@ impl Triangle {
             angles,
             angle_type,
             side_type,
-            center: Coord::new(0, 0),
+            center: coord!(0, 0),
         };
-        triangle.center = Coord::new(triangle.left(), triangle.top())
-            .mid_point(Coord::new(triangle.right(), triangle.bottom()));
+        triangle.center = coord!(triangle.left(), triangle.top())
+            .mid_point(coord!(triangle.right(), triangle.bottom()));
         triangle
     }
 }
@@ -110,17 +110,17 @@ impl Shape for Triangle {
         Triangle::new(points[0], points[1], points[2])
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let point = point.into();
-        let p1 = Coord::new(
+    fn contains(&self, point: Coord) -> bool {
+        let point = point;
+        let p1 = coord!(
             self.points[1].x - self.points[0].x,
             self.points[1].y - self.points[0].y,
         );
-        let p2 = Coord::new(
+        let p2 = coord!(
             self.points[2].x - self.points[0].x,
             self.points[2].y - self.points[0].y,
         );
-        let q = Coord::new(point.x - self.points[0].x, point.y - self.points[0].y);
+        let q = coord!(point.x - self.points[0].x, point.y - self.points[0].y);
 
         let s = q.cross_product(p2) as f32 / p1.cross_product(p2) as f32;
         let t = p1.cross_product(q) as f32 / p1.cross_product(p2) as f32;
@@ -326,8 +326,8 @@ mod test {
     #[test]
     fn check_moving() {
         let triangle = Triangle::equilateral((50, 50), 10, FlatSide::Left);
-        assert_eq!(triangle.points[0], Coord::new(45, 45));
-        let moved = triangle.move_to((30, 30));
-        assert_eq!(moved.points[0], Coord::new(30, 30));
+        assert_eq!(triangle.points[0], coord!(45, 45));
+        let moved = triangle.move_to(coord!(30, 30));
+        assert_eq!(moved.points[0], coord!(30, 30));
     }
 }

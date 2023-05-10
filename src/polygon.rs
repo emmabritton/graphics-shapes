@@ -1,8 +1,4 @@
-use crate::circle::Circle;
-use crate::line::Line;
-use crate::rect::Rect;
-use crate::triangle::Triangle;
-use crate::{Coord, Shape};
+use crate::prelude::*;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +11,8 @@ pub struct Polygon {
     center: Coord,
     is_convex: bool,
 }
+
+impl IntersectsContains for Polygon {}
 
 impl Polygon {
     #[must_use]
@@ -32,8 +30,7 @@ impl Polygon {
             is_regular: false,
             is_convex,
         };
-        poly.center =
-            Coord::new(poly.left(), poly.top()).mid_point(Coord::new(poly.right(), poly.bottom()));
+        poly.center = poly.top_left().mid_point(poly.bottom_right());
         let dists: Vec<usize> = points.iter().map(|p| p.distance(poly.center)).collect();
         poly.is_regular = dists.iter().all(|dist| dist == &dists[0]);
         poly
@@ -82,8 +79,8 @@ impl Shape for Polygon {
         Polygon::new(points)
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let point = point.into();
+    fn contains(&self, point: Coord) -> bool {
+        let point = point;
         let mut j = self.fpoints.len() - 1;
         let mut odd_number_of_nodes = false;
         let fpoint = (point.x as f32, point.y as f32);
@@ -156,7 +153,7 @@ impl Shape for Polygon {
                 }
                 for i in (0..node_count - 1).step_by(2) {
                     for x in (node[i] as isize)..(node[i + 1] as isize) {
-                        output.push(Coord::new(x + 1, y as isize));
+                        output.push(coord!(x + 1, y as isize));
                     }
                 }
             }

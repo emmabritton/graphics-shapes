@@ -1,5 +1,25 @@
 # Changelog
 
+### Version 0.2.0
+- Serious breaking
+  - The `Shape` trait no longer has generics so now `&dyn Shape` can be used but all the generics can to be removed 
+- Add
+  - `coord!` macro, it accepts `number, number` or `(number, number)` 
+  - All shapes:
+    - `top_left()`, `top_right()`, `bottom_left()`, `bottom_right()`
+    - `intersects_rect()`, `intersects_line()`, `intersects_circle()`, `intersects_ellipse()`, `intersects_triangle()`, `intersects_polygon()`
+    - `contains_rect()`, `contains_line()`, `contains_circle()`, `contains_ellipse()`, `contains_triangle()`, `contains_polygon()`
+  - `Rect`:
+    - `as_lines()`
+  - `Circle`
+    - `as_outer_rect()` replacing `as_rect()`, this will be removed in 0.3.0
+    - `as_inner_rect()`
+- Fix bugs:
+  - `Line`:
+    - `Vertical`/`Horizontal` type mix up
+    - `left()`, `right()`, `top()`, `bottom()` assuming point order
+  - Make `Line` and `Triangle` serializable
+
 ### Version 0.1.14
 - Add `coord_vec` macro that creats a `Vec<Coord>` from any number of expressions that can converted to Coords using `Coord::from`
 - Rename `outline_points` and `filled_points` to `outline_pixels` and `filled_pixels`

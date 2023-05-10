@@ -5,14 +5,14 @@
 //! ```
 //! # use graphics_shapes::coord::Coord;
 //! # use graphics_shapes::rect::Rect;
-//! # use graphics_shapes::Shape;
+//! # use graphics_shapes::{coord, Shape};
 //! # use graphics_shapes::triangle::Triangle;
 //! let rect = Rect::new((10,10),(20,20));
-//! assert!(rect.contains((15,15)));
+//! assert!(rect.contains(coord!(15,15)));
 //! let triangle = Triangle::new((34,5),(12,30),(9,10));
 //! let rotated = triangle.rotate(45);
 //!
-//! let start = Coord::new(20,130);
+//! let start = coord!(20,130);
 //! let dist = start.distance((30,130));
 //!```
 
@@ -21,31 +21,50 @@
 
 use crate::coord::Coord;
 use crate::general_math::{rotate_points, scale_points};
+use crate::prelude::*;
 use fnv::FnvHashSet;
+use std::any::Any;
 
 pub mod circle;
 #[macro_use]
 pub mod coord;
+pub mod contains;
 pub mod ellipse;
 mod general_math;
+pub mod intersection;
 pub mod lerp;
 pub mod line;
 pub mod polygon;
 pub mod rect;
+pub mod shape_box;
 pub mod triangle;
 
 pub mod prelude {
     pub use crate::circle::Circle;
+    pub use crate::contains::*;
     pub use crate::coord::*;
     pub use crate::ellipse::Ellipse;
+    pub use crate::intersection::*;
     pub use crate::line::Line;
     pub use crate::polygon::Polygon;
     pub use crate::rect::Rect;
+    pub use crate::shape_box::*;
     pub use crate::triangle::Triangle;
     pub use crate::Shape;
+    pub use crate::*;
 }
 
-pub trait Shape {
+pub trait ShapeToAny: 'static {
+    fn as_any(&self) -> &dyn Any;
+}
+
+impl<T: 'static> ShapeToAny for T {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+pub trait Shape: ShapeToAny {
     /// create this shape from a list of points (corners of a shape or tips of a line)
     #[must_use]
     fn from_points(points: &[Coord]) -> Self
@@ -54,11 +73,11 @@ pub trait Shape {
 
     /// change every point by +`delta`
     #[must_use]
-    fn translate_by<P: Into<Coord>>(&self, delta: P) -> Self
+    fn translate_by(&self, delta: Coord) -> Self
     where
         Self: Sized,
     {
-        let delta = delta.into();
+        let delta = delta;
         let points: Vec<Coord> = self.points().iter().map(|p| *p + delta).collect();
         Self::from_points(&points)
     }
@@ -69,31 +88,31 @@ pub trait Shape {
     /// As this moves self.points()[0] the result might be unexpected if the shape was created
     /// right to left and/or bottom to top
     #[must_use]
-    fn move_to<P: Into<Coord>>(&self, point: P) -> Self
+    fn move_to(&self, point: Coord) -> Self
     where
         Self: Sized,
     {
-        let diff = (point.into()) - self.points()[0];
+        let diff = (point) - self.points()[0];
         self.translate_by(diff)
     }
 
-    /// moves the shapes center to `point`
+    /// Moves the shapes center to `point`
     /// (and changes every other point to match their original distance and angle)
     ///
     /// As this moves relative to self.points()[0] the result might be unexpected if the shape was created
     /// right to left and/or bottom to top
     #[must_use]
-    fn move_center_to<P: Into<Coord>>(&self, point: P) -> Self
+    fn move_center_to(&self, point: Coord) -> Self
     where
         Self: Sized,
     {
-        let diff = (point.into()) - (self.center() - self.points()[0]);
+        let diff = (point) - (self.center() - self.points()[0]);
         self.translate_by(diff)
     }
 
     /// Returns true if the shape contains point
     #[must_use]
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool;
+    fn contains(&self, point: Coord) -> bool;
 
     /// Points(corners/ends) the shape is made of
     #[must_use]
@@ -110,11 +129,11 @@ pub trait Shape {
 
     /// Rotate shape around a point
     #[must_use]
-    fn rotate_around<P: Into<Coord>>(&self, degrees: isize, point: P) -> Self
+    fn rotate_around(&self, degrees: isize, point: Coord) -> Self
     where
         Self: Sized,
     {
-        let points = rotate_points(point.into(), &self.points(), degrees);
+        let points = rotate_points(point, &self.points(), degrees);
         Self::from_points(&points)
     }
 
@@ -148,22 +167,22 @@ pub trait Shape {
 
     #[must_use]
     fn top_left(&self) -> Coord {
-        Coord::new(self.left(), self.top())
+        coord!(self.left(), self.top())
     }
 
     #[must_use]
     fn top_right(&self) -> Coord {
-        Coord::new(self.right(), self.top())
+        coord!(self.right(), self.top())
     }
 
     #[must_use]
     fn bottom_left(&self) -> Coord {
-        Coord::new(self.left(), self.bottom())
+        coord!(self.left(), self.bottom())
     }
 
     #[must_use]
     fn bottom_right(&self) -> Coord {
-        Coord::new(self.right(), self.bottom())
+        coord!(self.right(), self.bottom())
     }
 
     /// Scale the shape by factor (around the center, so the change will be uniform)
@@ -177,11 +196,11 @@ pub trait Shape {
 
     /// Scale the shape by factor around point
     #[must_use]
-    fn scale_around<P: Into<Coord>>(&self, factor: f32, point: P) -> Self
+    fn scale_around(&self, factor: f32, point: Coord) -> Self
     where
         Self: Sized,
     {
-        let points = scale_points(point.into(), &self.points(), factor);
+        let points = scale_points(point, &self.points(), factor);
         Self::from_points(&points)
     }
 
@@ -194,6 +213,67 @@ pub trait Shape {
     /// This should be cached rather than called per frame
     #[must_use]
     fn filled_pixels(&self) -> Vec<Coord>;
+
+    // #[must_use]
+    // fn as_any(&self) -> &dyn Any where Self: Sized{
+    //     self
+    // }
+}
+
+trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
+    /// Returns
+    /// * Some(true) if `self` contains `other`
+    /// * Some(false) if `self` does not contain `other`
+    /// * None if `other` isn't a supported `Shape`
+    #[must_use]
+    fn contains_shape(&self, other: &dyn Shape) -> Option<bool> {
+        if let Some(line) = other.as_any().downcast_ref::<Line>() {
+            return Some(self.contains_line(line));
+        }
+        if let Some(rect) = other.as_any().downcast_ref::<Rect>() {
+            return Some(self.contains_rect(rect));
+        }
+        if let Some(triangle) = other.as_any().downcast_ref::<Triangle>() {
+            return Some(self.contains_triangle(triangle));
+        }
+        if let Some(polygon) = other.as_any().downcast_ref::<Polygon>() {
+            return Some(self.contains_polygon(polygon));
+        }
+        if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
+            return Some(self.contains_circle(circle));
+        }
+        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+            return Some(self.contains_ellipse(ellipse));
+        }
+        None
+    }
+
+    /// Returns
+    /// * Some(true) if `self` intersects `other`
+    /// * Some(false) if `self` does not intersects `other`
+    /// * None if `other` isn't a supported `Shape`
+    #[must_use]
+    fn intersects_shape(&self, other: &dyn Shape) -> Option<bool> {
+        if let Some(line) = other.as_any().downcast_ref::<Line>() {
+            return Some(self.intersects_line(line));
+        }
+        if let Some(rect) = other.as_any().downcast_ref::<Rect>() {
+            return Some(self.intersects_rect(rect));
+        }
+        if let Some(triangle) = other.as_any().downcast_ref::<Triangle>() {
+            return Some(self.intersects_triangle(triangle));
+        }
+        if let Some(polygon) = other.as_any().downcast_ref::<Polygon>() {
+            return Some(self.intersects_polygon(polygon));
+        }
+        if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
+            return Some(self.intersects_circle(circle));
+        }
+        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+            return Some(self.intersects_ellipse(ellipse));
+        }
+        None
+    }
 }
 
 fn new_hash_set() -> FnvHashSet<Coord> {
@@ -202,13 +282,10 @@ fn new_hash_set() -> FnvHashSet<Coord> {
 
 #[cfg(test)]
 mod test {
-    use crate::coord::Coord;
+    use crate::prelude::*;
 
     pub fn check_points(expected: &[(isize, isize)], actual: &[Coord]) {
-        let mut expected: Vec<Coord> = expected
-            .iter()
-            .map(|(x, y)| Coord::new(*x as isize, *y as isize))
-            .collect();
+        let mut expected: Vec<Coord> = expected.iter().map(|(x, y)| coord!(*x, *y)).collect();
         let mut unexpected = vec![];
         for point in actual {
             if let Some(i) = expected.iter().position(|p| p == point) {
@@ -227,5 +304,18 @@ mod test {
         if !message.is_empty() {
             panic!("{message}");
         }
+    }
+
+    #[test]
+    fn generic_contains() {
+        let outer = Rect::new((0, 0), (10, 10));
+        let inner = Line::new((2, 2), (4, 4));
+
+        assert!(outer.contains_line(&inner));
+        assert_eq!(outer.contains_shape(&inner), Some(true));
+
+        let outside = Line::new((-3, 200), (-1, -1));
+        assert!(!outer.contains_line(&outside));
+        assert_eq!(outer.contains_shape(&outside), Some(false));
     }
 }

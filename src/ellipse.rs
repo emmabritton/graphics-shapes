@@ -1,8 +1,4 @@
-use crate::circle::Circle;
-use crate::coord::Coord;
-use crate::line::Line;
-use crate::rect::Rect;
-use crate::{new_hash_set, Shape};
+use crate::prelude::*;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -10,17 +6,32 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Ellipse {
     center: Coord,
-    width: usize,
-    height: usize,
+    top: Coord,
+    right: Coord,
 }
+
+impl IntersectsContains for Ellipse {}
 
 impl Ellipse {
     #[must_use]
     pub fn new<P: Into<Coord>>(center: P, width: usize, height: usize) -> Self {
+        let center = center.into();
+        Self {
+            center,
+            top: center - (0, height / 2),
+            right: center + (width / 2, 0),
+        }
+    }
+
+    pub fn new_rotated<P1: Into<Coord>, P2: Into<Coord>, P3: Into<Coord>>(
+        center: P1,
+        top: P2,
+        right: P3,
+    ) -> Self {
         Self {
             center: center.into(),
-            width,
-            height,
+            top: top.into(),
+            right: right.into(),
         }
     }
 }
@@ -29,13 +40,13 @@ impl Ellipse {
     #[inline]
     #[must_use]
     pub fn width(&self) -> usize {
-        self.width
+        (self.right() - self.left()).unsigned_abs()
     }
 
     #[inline]
     #[must_use]
     pub fn height(&self) -> usize {
-        self.height
+        (self.bottom() - self.top()).unsigned_abs()
     }
 }
 
@@ -52,26 +63,26 @@ impl Shape for Ellipse {
         Ellipse::new(center, width.max(0) as usize, height.max(0) as usize)
     }
 
-    fn translate_by<P: Into<Coord>>(&self, delta: P) -> Self {
-        Ellipse::new(self.center + delta.into(), self.width, self.height)
+    fn translate_by(&self, delta: Coord) -> Self {
+        Ellipse::new(self.center + delta, self.width(), self.height())
     }
 
-    fn move_to<P: Into<Coord>>(&self, point: P) -> Self {
-        Ellipse::new(point.into(), self.width, self.height)
+    fn move_to(&self, point: Coord) -> Self {
+        Ellipse::new(point, self.width(), self.height())
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let point = point.into();
-        ((point.x - self.center.x) ^ 2) / ((self.width as isize) ^ 2)
-            + ((point.y - self.center.y) ^ 2) / ((self.height as isize) ^ 2)
+    fn contains(&self, point: Coord) -> bool {
+        let point = point;
+        ((point.x - self.center.x) ^ 2) / ((self.width() as isize) ^ 2)
+            + ((point.y - self.center.y) ^ 2) / ((self.height() as isize) ^ 2)
             <= 1
     }
 
     /// Returns [top_left, bottom_right]
     fn points(&self) -> Vec<Coord> {
         vec![
-            Coord::new(self.left(), self.top()),
-            Coord::new(self.right(), self.bottom()),
+            coord!(self.left(), self.top()),
+            coord!(self.right(), self.bottom()),
         ]
     }
 
@@ -82,29 +93,29 @@ impl Shape for Ellipse {
 
     #[inline]
     fn left(&self) -> isize {
-        self.center.x - (self.width as isize) / 2
+        self.center.x - (self.width() as isize) / 2
     }
 
     #[inline]
     fn right(&self) -> isize {
-        self.center.x + (self.width as isize) / 2
+        self.center.x + (self.width() as isize) / 2
     }
 
     #[inline]
     fn top(&self) -> isize {
-        self.center.y - (self.height as isize) / 2
+        self.center.y - (self.height() as isize) / 2
     }
 
     #[inline]
     fn bottom(&self) -> isize {
-        self.center.y + (self.height as isize) / 2
+        self.center.y + (self.height() as isize) / 2
     }
 
     fn outline_pixels(&self) -> Vec<Coord> {
         let center_x = self.center.x;
         let center_y = self.center.y;
-        let rx = (self.width / 2) as f32;
-        let ry = (self.height / 2) as f32;
+        let rx = (self.width() / 2) as f32;
+        let ry = (self.height() / 2) as f32;
         let mut output = new_hash_set();
 
         let mut x = 0;
@@ -113,10 +124,10 @@ impl Shape for Ellipse {
         let mut dx = 2.0 * (ry * ry) * (x as f32);
         let mut dy = 2.0 * (rx * rx) * (y as f32);
         while dx < dy {
-            output.insert(Coord::new(center_x + x, center_y + y));
-            output.insert(Coord::new(center_x - x, center_y + y));
-            output.insert(Coord::new(center_x + x, center_y - y));
-            output.insert(Coord::new(center_x - x, center_y - y));
+            output.insert(coord!(center_x + x, center_y + y));
+            output.insert(coord!(center_x - x, center_y + y));
+            output.insert(coord!(center_x + x, center_y - y));
+            output.insert(coord!(center_x - x, center_y - y));
             if p1 < 0.0 {
                 x += 1;
                 dx = 2.0 * (ry * ry) * (x as f32);
@@ -134,10 +145,10 @@ impl Shape for Ellipse {
             - (rx * rx) * (ry * ry);
 
         while y >= 0 {
-            output.insert(Coord::new(center_x + x, center_y + y));
-            output.insert(Coord::new(center_x - x, center_y + y));
-            output.insert(Coord::new(center_x + x, center_y - y));
-            output.insert(Coord::new(center_x - x, center_y - y));
+            output.insert(coord!(center_x + x, center_y + y));
+            output.insert(coord!(center_x - x, center_y + y));
+            output.insert(coord!(center_x + x, center_y - y));
+            output.insert(coord!(center_x - x, center_y - y));
             if p2 > 0.0 {
                 y -= 1;
                 dy = 2.0 * (rx * rx) * (y as f32);
@@ -156,8 +167,8 @@ impl Shape for Ellipse {
 
     fn filled_pixels(&self) -> Vec<Coord> {
         let mut output = new_hash_set();
-        let height = self.height as isize / 2;
-        let width = self.width as isize / 2;
+        let height = self.height() as isize / 2;
+        let width = self.width() as isize / 2;
         let height_sq = height * height;
         let width_sq = width * width;
         let limit = height_sq * width_sq;
@@ -165,7 +176,7 @@ impl Shape for Ellipse {
             let y_amount = y * y * width_sq;
             for x in -width..width {
                 if x * x * height_sq + y_amount <= limit {
-                    output.insert(Coord::new(self.center.x + x, self.center.y + y));
+                    output.insert(coord!(self.center.x + x, self.center.y + y));
                 }
             }
         }
@@ -197,8 +208,8 @@ impl Ellipse {
 
     #[must_use]
     pub fn as_circle(&self) -> Option<Circle> {
-        if self.width == self.height {
-            Some(Circle::new(self.center, self.width / 2))
+        if self.width() == self.height() {
+            Some(Circle::new(self.center, self.width() / 2))
         } else {
             None
         }

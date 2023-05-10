@@ -11,9 +11,9 @@ Primarily designed to be use with [Buffer Graphics](https://github.com/emmabritt
 
 Add this line to Cargo.toml
 ```toml
-graphics-shapes = "0.1.14"
+graphics-shapes = "0.2.0"
 # or with both features
-graphics-shapes = {version = "0.1.14", features = ["mint", "serde"] }
+graphics-shapes = {version = "0.2.0", features = ["mint", "serde"] }
 ```
 
 ### Examples 
@@ -24,7 +24,7 @@ assert!(rect.contains((15,15)));
 let triangle = Triangle::new((34,5),(12,30),(9,10));
 let rotated = triangle.rotate(45);
 
-let start = Coord::new(20,130);
+let start = coord!(20,130);
 let dist = start.distance((30,130));
 ```
 

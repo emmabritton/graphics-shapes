@@ -1,8 +1,4 @@
-use crate::coord::Coord;
-use crate::ellipse::Ellipse;
-use crate::line::Line;
-use crate::rect::Rect;
-use crate::{new_hash_set, Shape};
+use crate::prelude::*;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +8,8 @@ pub struct Circle {
     center: Coord,
     radius: usize,
 }
+
+impl IntersectsContains for Circle {}
 
 impl Circle {
     #[must_use]
@@ -45,16 +43,16 @@ impl Shape for Circle {
         Circle::new(points[0], radius)
     }
 
-    fn translate_by<P: Into<Coord>>(&self, delta: P) -> Self {
-        Circle::new(self.center + delta.into(), self.radius)
+    fn translate_by(&self, delta: Coord) -> Self {
+        Circle::new(self.center + delta, self.radius)
     }
 
-    fn move_to<P: Into<Coord>>(&self, point: P) -> Self {
-        Circle::new(point.into(), self.radius)
+    fn move_to(&self, point: Coord) -> Self {
+        Circle::new(point, self.radius)
     }
 
-    fn contains<P: Into<Coord>>(&self, point: P) -> bool {
-        let dist = self.center.distance(point.into());
+    fn contains(&self, point: Coord) -> bool {
+        let dist = self.center.distance(point);
         dist <= self.radius
     }
 
@@ -97,14 +95,14 @@ impl Shape for Circle {
         let mut output = new_hash_set();
 
         while x <= y {
-            output.insert(Coord::new(cx + x, cy + y));
-            output.insert(Coord::new(cx + x, cy - y));
-            output.insert(Coord::new(cx - x, cy + y));
-            output.insert(Coord::new(cx - x, cy - y));
-            output.insert(Coord::new(cx + y, cy + x));
-            output.insert(Coord::new(cx + y, cy - x));
-            output.insert(Coord::new(cx - y, cy + x));
-            output.insert(Coord::new(cx - y, cy - x));
+            output.insert(coord!(cx + x, cy + y));
+            output.insert(coord!(cx + x, cy - y));
+            output.insert(coord!(cx - x, cy + y));
+            output.insert(coord!(cx - x, cy - y));
+            output.insert(coord!(cx + y, cy + x));
+            output.insert(coord!(cx + y, cy - x));
+            output.insert(coord!(cx - y, cy + x));
+            output.insert(coord!(cx - y, cy - x));
             if d < 0 {
                 d += 2 * x + 1
             } else {
@@ -129,10 +127,10 @@ impl Shape for Circle {
             for x in 0..=half_width {
                 let left = cx - x;
                 let right = cx + x;
-                output.insert(Coord::new(left, up));
-                output.insert(Coord::new(right, up));
-                output.insert(Coord::new(left, down));
-                output.insert(Coord::new(right, down));
+                output.insert(coord!(left, up));
+                output.insert(coord!(right, up));
+                output.insert(coord!(left, down));
+                output.insert(coord!(right, down));
             }
         }
         output.into_iter().collect()
