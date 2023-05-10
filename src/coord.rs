@@ -1,3 +1,4 @@
+use crate::coord;
 #[cfg(feature = "mint")]
 use mint::Point2;
 #[cfg(feature = "serde_derive")]
@@ -27,7 +28,7 @@ impl Coord {
         let rads = (degrees as f32 - 90.0).to_radians();
         let x = (distance * rads.cos()).round() as isize;
         let y = (distance * rads.sin()).round() as isize;
-        Coord::new(center.x + x, center.y + y)
+        coord!(center.x + x, center.y + y)
     }
 }
 
@@ -48,7 +49,7 @@ impl Coord {
         let rhs = rhs.into();
         let x = (self.x + rhs.x) / 2;
         let y = (self.y + rhs.y) / 2;
-        Coord::new(x, y)
+        coord!(x, y)
     }
 
     /// Angle in degrees from self to rhs
@@ -310,6 +311,19 @@ impl From<&Coord> for Coord {
     }
 }
 
+#[macro_export]
+macro_rules! coord {
+    ($lhs: expr, $rhs: expr,) => {
+        Coord::from(($lhs, $rhs))
+    };
+    ($lhs: expr, $rhs: expr) => {
+        Coord::from(($lhs, $rhs))
+    };
+    ($pair: expr) => {
+        Coord::from($pair)
+    };
+}
+
 impl_from_num!(u8);
 impl_from_num!(i8);
 impl_from_num!(u16);
@@ -344,9 +358,9 @@ float_mul!(f64);
 /// # Example
 /// ```rust
 ///# use graphics_shapes::coord::Coord;
-///# use graphics_shapes::coord_vec;
-/// let list = coord_vec![(5.0,6.0), (1_usize,2), Coord::new(-4,1)];
-/// assert_eq!(list, vec![Coord::new(5,6), Coord::new(1,2), Coord::new(-4,1)]);
+///# use graphics_shapes::{coord, coord_vec};
+/// let list = coord_vec![(5.0,6.0), (1_usize,2), coord!(-4,1)];
+/// assert_eq!(list, vec![coord!(5,6), coord!(1,2), coord!(-4,1)]);
 /// ```
 #[macro_export]
 macro_rules! coord_vec {
@@ -374,27 +388,22 @@ mod test {
 
         #[test]
         fn one() {
-            let list = coord_vec![Coord::new(1, 1)];
-            assert_eq!(list, vec![Coord::new(1, 1)]);
+            let list = coord_vec![coord!(1, 1)];
+            assert_eq!(list, vec![coord!(1, 1)]);
 
             let list = coord_vec![(4.0, 2.0)];
-            assert_eq!(list, vec![Coord::new(4, 2)]);
+            assert_eq!(list, vec![coord!(4, 2)]);
         }
 
         #[test]
         fn many() {
             let list = coord_vec![(-1_isize, 1), (9_usize, 4)];
-            assert_eq!(list, vec![Coord::new(-1, 1), Coord::new(9, 4)]);
+            assert_eq!(list, vec![coord!(-1, 1), coord!(9, 4)]);
 
             let list = coord_vec![(-1, 1), (9_usize, 4), (5, 6), (9, 8)];
             assert_eq!(
                 list,
-                vec![
-                    Coord::new(-1, 1),
-                    Coord::new(9, 4),
-                    Coord::new(5, 6),
-                    Coord::new(9, 8)
-                ]
+                vec![coord!(-1, 1), coord!(9, 4), coord!(5, 6), coord!(9, 8)]
             );
         }
     }
@@ -404,7 +413,7 @@ mod test {
 
         #[test]
         fn zero_dist() {
-            let center = Coord::new(100, 100);
+            let center = coord!(100, 100);
 
             for i in 0..400 {
                 assert_eq!(Coord::from_angle(center, 0, i), center, "rot: {i}");
@@ -413,7 +422,7 @@ mod test {
 
         #[test]
         fn twenty_dist_positive_degrees() {
-            let center = Coord::new(100, 100);
+            let center = coord!(100, 100);
 
             let zero_degree = Coord::from_angle(center, 20, 0);
             let ninety_degree = Coord::from_angle(center, 20, 90);
@@ -430,7 +439,7 @@ mod test {
 
         #[test]
         fn twenty_dist_negative_degrees() {
-            let center = Coord::new(100, 100);
+            let center = coord!(100, 100);
 
             let zero_degree = Coord::from_angle(center, 20, -0);
             let ninety_degree = Coord::from_angle(center, 20, -90);
@@ -447,7 +456,7 @@ mod test {
 
         #[test]
         fn eighths() {
-            let center = Coord::new(100, 100);
+            let center = coord!(100, 100);
 
             let degree_45 = Coord::from_angle(center, 20, 45);
             let degree_135 = Coord::from_angle(center, 20, 135);
@@ -466,7 +475,7 @@ mod test {
 
         #[test]
         fn dist() {
-            let start = Coord::new(10, 10);
+            let start = coord!(10, 10);
 
             assert_eq!(start.distance((20, 10)), 10);
             assert_eq!(start.distance((0, 10)), 10);
@@ -480,7 +489,7 @@ mod test {
 
         #[test]
         fn angle() {
-            let center = Coord::new(20, 20);
+            let center = coord!(20, 20);
 
             assert_eq!(center.angle_to((30, 20)), 90);
             assert_eq!(center.angle_to((20, 30)), 180);
@@ -490,7 +499,7 @@ mod test {
 
         #[test]
         fn mid_points() {
-            let start = Coord::new(10, 10);
+            let start = coord!(10, 10);
 
             assert_eq!(start.mid_point((20, 10)), (15, 10).into());
             assert_eq!(start.mid_point((0, 10)), (5, 10).into());
@@ -504,21 +513,21 @@ mod test {
 
         #[test]
         fn simple() {
-            assert_eq!(Coord::new(1, 1).add((1, 1)), (2, 2).into());
-            assert_eq!(Coord::new(1, 1).sub((1, 1)), (0, 0).into());
-            assert_eq!(Coord::new(1, 1).mul((1, 1)), (1, 1).into());
-            assert_eq!(Coord::new(1, 1).abs(), (1, 1).into());
-            assert_eq!(Coord::new(1, 1).neg(), (-1, -1).into());
+            assert_eq!(coord!(1, 1).add((1, 1)), (2, 2).into());
+            assert_eq!(coord!(1, 1).sub((1, 1)), (0, 0).into());
+            assert_eq!(coord!(1, 1).mul((1, 1)), (1, 1).into());
+            assert_eq!(coord!(1, 1).abs(), (1, 1).into());
+            assert_eq!(coord!(1, 1).neg(), (-1, -1).into());
 
-            assert_eq!(Coord::new(2, 8).add((12, 63)), (14, 71).into());
-            assert_eq!(Coord::new(3, 7).sub((13, 24)), (-10, -17).into());
-            assert_eq!(Coord::new(4, 6).mul((11, 21)), (44, 126).into());
-            assert_eq!(Coord::new(5, -5).abs(), (5, 5).into());
-            assert_eq!(Coord::new(6, -4).neg(), (-6, 4).into());
+            assert_eq!(coord!(2, 8).add((12, 63)), (14, 71).into());
+            assert_eq!(coord!(3, 7).sub((13, 24)), (-10, -17).into());
+            assert_eq!(coord!(4, 6).mul((11, 21)), (44, 126).into());
+            assert_eq!(coord!(5, -5).abs(), (5, 5).into());
+            assert_eq!(coord!(6, -4).neg(), (-6, 4).into());
 
-            assert_eq!(Coord::new(4, 8).mul(0.5), (2, 4).into());
-            assert_eq!(Coord::new(4, 8).mul(Coord::from((0.5, 0.5))), (0, 0).into());
-            assert_eq!(Coord::new(4, 8).mul(Coord::from((0.4, 0.4))), (0, 0).into());
+            assert_eq!(coord!(4, 8).mul(0.5), (2, 4).into());
+            assert_eq!(coord!(4, 8).mul(Coord::from((0.5, 0.5))), (0, 0).into());
+            assert_eq!(coord!(4, 8).mul(Coord::from((0.4, 0.4))), (0, 0).into());
         }
     }
 }
