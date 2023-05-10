@@ -54,17 +54,17 @@ pub mod prelude {
     pub use crate::*;
 }
 
-pub trait ShapeToAny: 'static {
+pub trait AnyToAny: 'static {
     fn as_any(&self) -> &dyn Any;
 }
 
-impl<T: 'static> ShapeToAny for T {
+impl<T: 'static> AnyToAny for T {
     fn as_any(&self) -> &dyn Any {
         self
     }
 }
 
-pub trait Shape: ShapeToAny {
+pub trait Shape: AnyToAny {
     /// create this shape from a list of points (corners of a shape or tips of a line)
     #[must_use]
     fn from_points(points: &[Coord]) -> Self
@@ -213,13 +213,9 @@ pub trait Shape: ShapeToAny {
     /// This should be cached rather than called per frame
     #[must_use]
     fn filled_pixels(&self) -> Vec<Coord>;
-
-    // #[must_use]
-    // fn as_any(&self) -> &dyn Any where Self: Sized{
-    //     self
-    // }
 }
 
+//Separate so `Shape`s don't have to implement Contains and Intersects
 trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
     /// Returns
     /// * Some(true) if `self` contains `other`
