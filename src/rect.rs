@@ -1,4 +1,7 @@
+use crate::general_math::rotate_points;
+use crate::new_hash_set;
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
@@ -77,6 +80,13 @@ impl Shape for Rect {
         Rect::new(points[0], points[1])
     }
 
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Rect::from_points(points)
+    }
+
     fn contains(&self, point: Coord) -> bool {
         let point = point;
         (self.left()..=self.right()).contains(&point.x)
@@ -152,6 +162,10 @@ impl Shape for Rect {
 
         output.into_iter().collect()
     }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Rect(self.clone())
+    }
 }
 
 impl Rect {
@@ -188,10 +202,10 @@ impl Rect {
         Polygon::new(&[self.top_left, top_right, self.bottom_right, bottom_left])
     }
 
-    #[must_use]
-    pub fn as_ellipse(&self) -> Ellipse {
-        Ellipse::from_points(&self.points())
-    }
+    // #[must_use]
+    // pub fn as_ellipse(&self) -> Ellipse {
+    //     Ellipse::from_points(&self.points())
+    // }
 
     #[must_use]
     pub fn as_lines(&self) -> [Line; 4] {
@@ -210,7 +224,6 @@ mod test {
     use crate::test::check_points;
 
     mod rotation {
-        use crate::coord::Coord;
         use crate::rect::Rect;
         use crate::Shape;
 

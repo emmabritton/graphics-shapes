@@ -37,9 +37,24 @@ impl Coord {
     #[must_use]
     pub fn distance<P: Into<Coord>>(self, rhs: P) -> usize {
         let rhs = rhs.into();
-        let x = (rhs.x - self.x) as f32;
-        let y = (rhs.y - self.y) as f32;
+        let x = (rhs.x - self.x) as f64;
+        let y = (rhs.y - self.y) as f64;
         x.hypot(y).round().abs() as usize
+    }
+
+    #[must_use]
+    pub fn are_collinear<P1: Into<Coord>, P2: Into<Coord>>(self, b: P1, c: P2) -> bool {
+        let b = b.into();
+        let c = c.into();
+        (b.x - self.x) * (c.y - self.y) == (c.x - self.x) * (b.y - self.y)
+    }
+
+    #[must_use]
+    pub fn is_between<P1: Into<Coord>, P2: Into<Coord>>(self, a: P1, b: P2) -> bool {
+        let a = a.into();
+        let b = b.into();
+        ((a.x <= self.x && self.x <= b.x) && (a.y <= self.y && self.y <= b.y))
+            || ((b.x <= self.x && self.x <= a.x) && (b.y <= self.y && self.y <= a.y))
     }
 
     /// Point midway in between self and rhs
@@ -314,13 +329,13 @@ impl From<&Coord> for Coord {
 #[macro_export]
 macro_rules! coord {
     ($lhs: expr, $rhs: expr,) => {
-        Coord::from(($lhs, $rhs))
+        $crate::coord::Coord::from(($lhs, $rhs))
     };
     ($lhs: expr, $rhs: expr) => {
-        Coord::from(($lhs, $rhs))
+        $crate::coord::Coord::from(($lhs, $rhs))
     };
     ($pair: expr) => {
-        Coord::from($pair)
+        $crate::coord::Coord::from($pair)
     };
 }
 
@@ -378,8 +393,6 @@ macro_rules! coord_vec {
 #[cfg(test)]
 mod test {
     mod list {
-        use crate::coord::Coord;
-
         #[test]
         fn empty() {
             let list = coord_vec![];
@@ -471,8 +484,6 @@ mod test {
     }
 
     mod methods {
-        use crate::Coord;
-
         #[test]
         fn dist() {
             let start = coord!(10, 10);

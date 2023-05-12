@@ -20,7 +20,7 @@ graphics-shapes = {version = "0.2.0", features = ["mint", "serde"] }
 
 ```rust
 let rect = Rect::new((10,10),(20,20));
-assert!(rect.contains((15,15)));
+assert!(rect.contains(coord!(15,15)));
 let triangle = Triangle::new((34,5),(12,30),(9,10));
 let rotated = triangle.rotate(45);
 

@@ -1,4 +1,6 @@
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
+use crate::{coord, new_hash_set};
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -41,6 +43,14 @@ impl Shape for Circle {
         debug_assert!(points.len() >= 2);
         let radius = points[0].distance(points[1]);
         Circle::new(points[0], radius)
+    }
+
+    /// must be [center, edge]
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Circle::from_points(points)
     }
 
     fn translate_by(&self, delta: Coord) -> Self {
@@ -135,6 +145,10 @@ impl Shape for Circle {
         }
         output.into_iter().collect()
     }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Circle(self.clone())
+    }
 }
 
 impl Circle {
@@ -176,8 +190,8 @@ impl Circle {
         Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
     }
 
-    #[must_use]
-    pub fn as_ellipse(&self) -> Ellipse {
-        Ellipse::new(self.center, self.radius * 2, self.radius * 2)
-    }
+    // #[must_use]
+    // pub fn as_ellipse(&self) -> Ellipse {
+    //     Ellipse::new(self.center, self.radius * 2, self.radius * 2)
+    // }
 }

@@ -1,5 +1,5 @@
 use crate::intersection::shared::{
-    line_circle, line_ellipse, line_polygon, line_rect, line_triangle,
+    line_circle, line_polygon, line_rect, line_triangle,
 };
 use crate::intersection::IntersectsShape;
 use crate::prelude::*;
@@ -22,9 +22,9 @@ impl IntersectsShape for Line {
         line_triangle(self, triangle)
     }
 
-    fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
-        line_ellipse(self, ellipse)
-    }
+    // fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
+    //     line_ellipse(self, ellipse)
+    // }
 
     fn intersects_polygon(&self, polygon: &Polygon) -> bool {
         line_polygon(self, polygon)
@@ -38,10 +38,6 @@ fn direction(p: Coord, q: Coord, r: Coord) -> isize {
         Ordering::Equal => 0,
         Ordering::Greater => 1,
     }
-}
-
-fn segment(p: Coord, q: Coord, r: Coord) -> bool {
-    q.x <= p.x.max(r.x) && q.x >= p.x.min(r.x) && q.y <= p.y.max(r.y) && q.y >= p.y.min(r.y)
 }
 
 fn comp_line_line(lhs: &Line, rhs: &Line) -> bool {
@@ -60,10 +56,10 @@ fn comp_line_line(lhs: &Line, rhs: &Line) -> bool {
     let d4 = direction(rs, re, le);
 
     (d1 != d2 && d3 != d4)
-        || (d1 == 0 && segment(ls, le, rs))
-        || (d2 == 0 && segment(ls, re, rs))
-        || (d3 == 0 && segment(le, ls, re))
-        || (d4 == 0 && segment(le, rs, re))
+        || (d1 == 0 && rs.is_between(ls, le))
+        || (d2 == 0 && re.is_between(ls, le))
+        || (d3 == 0 && ls.is_between(rs, re))
+        || (d4 == 0 && le.is_between(rs, re))
 }
 
 #[cfg(test)]
@@ -82,9 +78,39 @@ mod test {
 
         #[test]
         fn line_through_center_horz() {
-            let line = Line::new((0, 40), (100, 40));
-            let circle = Circle::new((50, 40), 20);
+            let line = Line::new((50, 133), (194, 133));
+            let circle = Circle::new((123, 135), 15);
             assert!(line.intersects_circle(&circle));
+            assert!(circle.intersects_line(&line));
+
+            let line = Line::new((57, 134), (201, 134));
+            let circle = Circle::new((123, 135), 15);
+            assert!(line.intersects_circle(&circle));
+            assert!(circle.intersects_line(&line));
+
+            let line = Line::new((194, 133), (50, 133));
+            let circle = Circle::new((123, 135), 15);
+            assert!(line.intersects_circle(&circle));
+            assert!(circle.intersects_line(&line));
+
+            let line = Line::new((201, 134), (57, 134));
+            let circle = Circle::new((123, 135), 15);
+            assert!(line.intersects_circle(&circle));
+            assert!(circle.intersects_line(&line));
+        }
+
+        #[test]
+        fn line_left() {
+            let line = Line::new((90, 115), (110, 135));
+            let circle = Circle::new((129, 136), 15);
+            assert!(!line.intersects_circle(&circle));
+        }
+
+        #[test]
+        fn collinear_ish() {
+            let line = Line::new((76, 73), (96, 93));
+            let circle = Circle::new((119, 114), 15);
+            assert!(!line.intersects_circle(&circle));
         }
     }
 
@@ -136,6 +162,26 @@ mod test {
         fn two_lines_overlap() {
             let line1 = Line::new((0, 0), (30, 0));
             let line2 = Line::new((0, 0), (30, 0));
+            assert!(line1.intersects_line(&line2));
+            assert!(line2.intersects_line(&line1));
+        }
+
+        #[test]
+        fn two_angled_inline_separate() {
+            let line1 = Line::new((109, 104), (129, 124));
+            let line2 = Line::new((134, 129), (159, 149));
+            assert!(!line1.intersects_line(&line2));
+            assert!(!line2.intersects_line(&line1));
+        }
+
+        #[test]
+        fn two_angled_inline_touching() {
+            let line1 = Line::new((82, 72), (102, 92));
+            let line2 = Line::new((96, 86), (116, 106));
+            assert!(line1.intersects_line(&line2));
+            assert!(line2.intersects_line(&line1));
+            let line1 = Line::new((102, 92), (82, 72));
+            let line2 = Line::new((116, 106), (96, 86));
             assert!(line1.intersects_line(&line2));
             assert!(line2.intersects_line(&line1));
         }

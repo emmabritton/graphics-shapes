@@ -18,9 +18,9 @@ impl ContainsShape for Polygon {
         contains_points(self, triangle) && !self.intersects_triangle(triangle)
     }
 
-    fn contains_ellipse(&self, ellipse: &Ellipse) -> bool {
-        contains_points(self, ellipse) && !self.intersects_ellipse(ellipse)
-    }
+    // fn contains_ellipse(&self, ellipse: &Ellipse) -> bool {
+    //     contains_points(self, ellipse) && !self.intersects_ellipse(ellipse)
+    // }
 
     fn contains_polygon(&self, polygon: &Polygon) -> bool {
         contains_points(self, polygon) && !self.intersects_polygon(polygon)

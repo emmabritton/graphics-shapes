@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -77,6 +78,13 @@ impl Shape for Polygon {
         Self: Sized,
     {
         Polygon::new(points)
+    }
+
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Polygon::from_points(points)
     }
 
     fn contains(&self, point: Coord) -> bool {
@@ -159,6 +167,10 @@ impl Shape for Polygon {
             }
         }
         output
+    }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Polygon(self.clone())
     }
 }
 

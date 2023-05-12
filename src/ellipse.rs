@@ -1,4 +1,6 @@
+use crate::new_hash_set;
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 
@@ -61,6 +63,13 @@ impl Shape for Ellipse {
         let height = points[1].y - points[0].x;
         let center = points[0].mid_point(points[1]);
         Ellipse::new(center, width.max(0) as usize, height.max(0) as usize)
+    }
+
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Ellipse::from_points(points)
     }
 
     fn translate_by(&self, delta: Coord) -> Self {
@@ -181,6 +190,10 @@ impl Shape for Ellipse {
             }
         }
         output.into_iter().collect()
+    }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Ellipse(self.clone())
     }
 }
 

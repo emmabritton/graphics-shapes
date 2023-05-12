@@ -1,9 +1,9 @@
 pub mod circle;
-pub mod ellipse;
+// pub mod ellipse;
 pub mod line;
 pub mod polygon;
-mod rect;
-pub mod shared;
+pub mod rect;
+mod shared;
 pub mod triangle;
 
 use crate::prelude::*;
@@ -25,9 +25,9 @@ pub trait IntersectsShape {
     #[must_use]
     fn intersects_triangle(&self, triangle: &Triangle) -> bool;
 
-    /// Returns true if `ellipse` intersects `self`
-    #[must_use]
-    fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool;
+    // /// Returns true if `ellipse` intersects `self`
+    // #[must_use]
+    // fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool;
 
     /// Returns true if `polygon` intersects `self`
     #[must_use]

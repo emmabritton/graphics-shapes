@@ -34,7 +34,7 @@ pub fn rotate_points(center: Coord, points: &[Coord], degrees: isize) -> Vec<Coo
 
 #[cfg(test)]
 mod test {
-    use crate::{rotate_points, Coord};
+    use crate::rotate_points;
 
     #[test]
     fn one_point_rotation() {

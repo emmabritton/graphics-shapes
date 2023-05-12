@@ -7,7 +7,7 @@ impl ContainsShape for Circle {
         dist < max.abs()
     }
 
-    fn contains_ellipse(&self, _ellipse: &Ellipse) -> bool {
-        todo!()
-    }
+    // fn contains_ellipse(&self, _ellipse: &Ellipse) -> bool {
+    //     todo!()
+    // }
 }

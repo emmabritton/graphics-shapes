@@ -20,11 +20,38 @@ impl IntersectsShape for Circle {
         triangle_circle(triangle, self)
     }
 
-    fn intersects_ellipse(&self, _ellipse: &Ellipse) -> bool {
-        todo!()
-    }
+    // fn intersects_ellipse(&self, _ellipse: &Ellipse) -> bool {
+    //     todo!()
+    // }
 
     fn intersects_polygon(&self, polygon: &Polygon) -> bool {
         polygon_circle(polygon, self)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::prelude::*;
+
+    #[test]
+    fn lines_all_directions() {
+        let line_tl = Line::new((0, 0), (20, 20));
+        let line_br = Line::new((20, 20), (0, 0));
+        let line_bl = Line::new((0, 20), (20, 0));
+        let line_tr = Line::new((20, 0), (0, 20));
+        let circle = Circle::new((10, 10), 4);
+
+        assert!(circle.intersects_line(&line_tl));
+        assert!(circle.intersects_line(&line_tr));
+        assert!(circle.intersects_line(&line_bl));
+        assert!(circle.intersects_line(&line_br));
+    }
+
+    #[test]
+    fn poly_part() {
+        let line = Line::new((128, 126), (50, 204));
+        let circle = Circle::new((113, 135), 15);
+
+        assert!(circle.intersects_line(&line));
     }
 }

@@ -1,5 +1,4 @@
 use crate::circle::Circle;
-use crate::ellipse::Ellipse;
 use crate::line::LineType;
 use crate::polygon::Polygon;
 use crate::prelude::{ContainsShape, Line, Rect, Triangle};
@@ -31,9 +30,9 @@ impl ContainsShape for Line {
         false
     }
 
-    fn contains_ellipse(&self, _: &Ellipse) -> bool {
-        false
-    }
+    // fn contains_ellipse(&self, _: &Ellipse) -> bool {
+    //     false
+    // }
 
     fn contains_polygon(&self, _: &Polygon) -> bool {
         false

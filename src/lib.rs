@@ -22,6 +22,7 @@
 use crate::coord::Coord;
 use crate::general_math::{rotate_points, scale_points};
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 use fnv::FnvHashSet;
 use std::any::Any;
 
@@ -29,7 +30,7 @@ pub mod circle;
 #[macro_use]
 pub mod coord;
 pub mod contains;
-pub mod ellipse;
+// pub mod ellipse;
 mod general_math;
 pub mod intersection;
 pub mod lerp;
@@ -43,15 +44,14 @@ pub mod prelude {
     pub use crate::circle::Circle;
     pub use crate::contains::*;
     pub use crate::coord::*;
-    pub use crate::ellipse::Ellipse;
+    // pub use crate::ellipse::Ellipse;
     pub use crate::intersection::*;
     pub use crate::line::Line;
     pub use crate::polygon::Polygon;
     pub use crate::rect::Rect;
-    pub use crate::shape_box::*;
     pub use crate::triangle::Triangle;
+    pub use crate::IntersectsContains;
     pub use crate::Shape;
-    pub use crate::*;
 }
 
 pub trait AnyToAny: 'static {
@@ -71,6 +71,11 @@ pub trait Shape: AnyToAny {
     where
         Self: Sized;
 
+    #[must_use]
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized;
+
     /// change every point by +`delta`
     #[must_use]
     fn translate_by(&self, delta: Coord) -> Self
@@ -79,7 +84,7 @@ pub trait Shape: AnyToAny {
     {
         let delta = delta;
         let points: Vec<Coord> = self.points().iter().map(|p| *p + delta).collect();
-        Self::from_points(&points)
+        self.rebuild(&points)
     }
 
     /// moves the shapes first point to `point`
@@ -134,7 +139,7 @@ pub trait Shape: AnyToAny {
         Self: Sized,
     {
         let points = rotate_points(point, &self.points(), degrees);
-        Self::from_points(&points)
+        self.rebuild(&points)
     }
 
     /// Center of shape
@@ -201,7 +206,7 @@ pub trait Shape: AnyToAny {
         Self: Sized,
     {
         let points = scale_points(point, &self.points(), factor);
-        Self::from_points(&points)
+        self.rebuild(&points)
     }
 
     /// The coords for drawing the shape outline, the points may be in any order
@@ -213,10 +218,13 @@ pub trait Shape: AnyToAny {
     /// This should be cached rather than called per frame
     #[must_use]
     fn filled_pixels(&self) -> Vec<Coord>;
+
+    #[must_use]
+    fn to_shape_box(&self) -> ShapeBox;
 }
 
 //Separate so `Shape`s don't have to implement Contains and Intersects
-trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
+pub trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
     /// Returns
     /// * Some(true) if `self` contains `other`
     /// * Some(false) if `self` does not contain `other`
@@ -238,8 +246,18 @@ trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
         if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
             return Some(self.contains_circle(circle));
         }
-        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
-            return Some(self.contains_ellipse(ellipse));
+        // if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+        //     return Some(self.contains_ellipse(ellipse));
+        // }
+        if let Some(shapebox) = other.as_any().downcast_ref::<ShapeBox>() {
+            return Some(match shapebox {
+                ShapeBox::Line(line) => self.contains_line(line),
+                ShapeBox::Rect(rect) => self.contains_rect(rect),
+                ShapeBox::Triangle(triangle) => self.contains_triangle(triangle),
+                ShapeBox::Circle(circle) => self.contains_circle(circle),
+                // ShapeBox::Ellipse(ellipse) => self.contains_ellipse(ellipse),
+                ShapeBox::Polygon(polygon) => self.contains_polygon(polygon),
+            });
         }
         None
     }
@@ -265,8 +283,18 @@ trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
         if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
             return Some(self.intersects_circle(circle));
         }
-        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
-            return Some(self.intersects_ellipse(ellipse));
+        // if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+        //     return Some(self.intersects_ellipse(ellipse));
+        // }
+        if let Some(shapebox) = other.as_any().downcast_ref::<ShapeBox>() {
+            return Some(match shapebox {
+                ShapeBox::Line(line) => self.intersects_line(line),
+                ShapeBox::Rect(rect) => self.intersects_rect(rect),
+                ShapeBox::Triangle(triangle) => self.intersects_triangle(triangle),
+                ShapeBox::Circle(circle) => self.intersects_circle(circle),
+                // ShapeBox::Ellipse(ellipse) => self.intersects_ellipse(ellipse),
+                ShapeBox::Polygon(polygon) => self.intersects_polygon(polygon),
+            });
         }
         None
     }
@@ -313,5 +341,14 @@ mod test {
         let outside = Line::new((-3, 200), (-1, -1));
         assert!(!outer.contains_line(&outside));
         assert_eq!(outer.contains_shape(&outside), Some(false));
+    }
+
+    #[test]
+    fn shapebox_intersects() {
+        let line = Line::new((10, 10), (20, 20));
+        let rect = Rect::new((5, 5), (15, 15));
+        let shape_box = rect.to_shape_box();
+        assert_eq!(line.intersects_shape(&rect), Some(true));
+        assert_eq!(line.intersects_shape(&shape_box), Some(true));
     }
 }

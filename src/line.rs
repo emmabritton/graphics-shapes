@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
 use std::mem::swap;
@@ -84,6 +85,24 @@ impl Line {
     pub fn line_type(&self) -> LineType {
         self.line_type
     }
+
+    pub fn nearest_point<P: Into<Coord>>(&self, other: P) -> Coord {
+        if self.line_type == LineType::Point {
+            return self.start;
+        }
+        let other = other.into();
+        let ba_x = (self.end.x - self.start.x) as f64;
+        let ba_y = (self.end.y - self.start.y) as f64;
+
+        let len = ba_x.powi(2) + ba_y.powi(2);
+        let t =
+            ((other.x - self.start.x) as f64 * ba_x + (other.y - self.start.y) as f64 * ba_y) / len;
+        let t = t.clamp(0.0, 1.0);
+        coord!(
+            self.start.x as f64 + t * ba_x,
+            self.start.y as f64 + t * ba_y
+        )
+    }
 }
 
 impl Shape for Line {
@@ -93,6 +112,13 @@ impl Shape for Line {
     {
         debug_assert!(points.len() >= 2);
         Line::new(points[0], points[1])
+    }
+
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Line::from_points(points)
     }
 
     fn contains(&self, point: Coord) -> bool {
@@ -105,7 +131,9 @@ impl Shape for Line {
             LineType::Vertical => {
                 self.start.x == point.x && (self.top()..=self.bottom()).contains(&point.y)
             }
-            LineType::Angled => self.start.distance(point) + self.end.distance(point) == self.len,
+            LineType::Angled => {
+                self.start.are_collinear(self.end, point) && point.is_between(self.start, self.end)
+            }
         }
     }
 
@@ -224,6 +252,10 @@ impl Shape for Line {
     fn filled_pixels(&self) -> Vec<Coord> {
         self.outline_pixels()
     }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Line(self.clone())
+    }
 }
 
 impl Line {
@@ -267,9 +299,24 @@ mod test {
         );
     }
 
+    #[test]
+    fn nearest() {
+        let line = Line::new((10, 10), (20, 20));
+        let point = line.nearest_point((17, 12));
+        assert!(line.contains(coord!(14, 14)));
+        assert_eq!(point, coord!(14, 14));
+    }
+
+    #[test]
+    fn nearest_line_reversed() {
+        let line = Line::new((110, 100), (40, 30));
+        let point = line.nearest_point((55, 85));
+        assert!(line.contains(coord!(75, 65)));
+        assert_eq!(point, coord!(75, 65));
+    }
+
     mod contains {
         use crate::line::Line;
-        use crate::prelude::Coord;
         use crate::Shape;
 
         #[test]

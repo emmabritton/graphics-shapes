@@ -1,4 +1,6 @@
+use crate::new_hash_set;
 use crate::prelude::*;
+use crate::shape_box::ShapeBox;
 use fnv::FnvHashSet;
 #[cfg(feature = "serde_derive")]
 use serde::{Deserialize, Serialize};
@@ -110,6 +112,13 @@ impl Shape for Triangle {
         Triangle::new(points[0], points[1], points[2])
     }
 
+    fn rebuild(&self, points: &[Coord]) -> Self
+    where
+        Self: Sized,
+    {
+        Triangle::from_points(points)
+    }
+
     fn contains(&self, point: Coord) -> bool {
         let point = point;
         let p1 = coord!(
@@ -168,6 +177,10 @@ impl Shape for Triangle {
             draw_flat_top(&mut output, [points[1], p, points[2]]);
         }
         output.into_iter().collect()
+    }
+
+    fn to_shape_box(&self) -> ShapeBox {
+        ShapeBox::Triangle(self.clone())
     }
 }
 
@@ -280,7 +293,6 @@ pub fn draw_flat_top(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
 
 #[cfg(test)]
 mod test {
-    use crate::coord::Coord;
     use crate::triangle::{AnglePosition, FlatSide, Triangle};
     use crate::Shape;
 
