@@ -1,6 +1,4 @@
-use crate::intersection::shared::{
-    line_circle, line_polygon, line_rect, line_triangle,
-};
+use crate::intersection::shared::{line_circle, line_polygon, line_rect, line_triangle};
 use crate::intersection::IntersectsShape;
 use crate::prelude::*;
 use std::cmp::Ordering;
