@@ -120,9 +120,7 @@ pub fn rect_circle(rect: &Rect, circle: &Circle) -> bool {
 // }
 
 pub fn polygon_circle(polygon: &Polygon, circle: &Circle) -> bool {
-    println!("Checking against {circle:?}");
     for line in polygon.as_lines() {
-        println!("Comparing {line:?}");
         if line.intersects_circle(circle) {
             return true;
         }

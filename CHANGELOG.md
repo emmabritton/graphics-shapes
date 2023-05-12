@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.1
+- Remove debug logging
+
 ### Version 0.2.0
 - Serious breaking changes
   - The `Shape` trait no longer has generics so now `&dyn Shape` can be used but all the generics can to be removed
