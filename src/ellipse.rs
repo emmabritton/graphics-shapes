@@ -10,6 +10,7 @@ pub struct Ellipse {
     center: Coord,
     top: Coord,
     right: Coord,
+    rotation: isize,
 }
 
 impl IntersectsContains for Ellipse {}
@@ -22,6 +23,7 @@ impl Ellipse {
             center,
             top: center - (0, height / 2),
             right: center + (width / 2, 0),
+            rotation: 0,
         }
     }
 
@@ -30,10 +32,17 @@ impl Ellipse {
         top: P2,
         right: P3,
     ) -> Self {
+        let center = center.into();
+        let top = top.into();
+        let right = right.into();
+        let angle = center.angle_to(top);
+        let right = Coord::from_angle(center, center.distance(right), -angle + 90);
+        let top = Coord::from_angle(center, center.distance(top), -angle);
         Self {
-            center: center.into(),
-            top: top.into(),
-            right: right.into(),
+            center,
+            top,
+            right,
+            rotation: angle,
         }
     }
 }
@@ -50,34 +59,60 @@ impl Ellipse {
     pub fn height(&self) -> usize {
         (self.bottom() - self.top()).unsigned_abs()
     }
+
+    pub fn angle(&self) -> isize {
+        self.rotation
+    }
+
+    #[inline(always)]
+    fn no_rotate_point(x: isize, y: isize, _: Coord, _: isize) -> Coord {
+        coord!(x, y)
+    }
+
+    #[inline(always)]
+    fn rotate_point(x: isize, y: isize, center: Coord, degrees: isize) -> Coord {
+        let orig = coord!(x, y);
+        let offset = center.angle_to(orig) + degrees;
+        Coord::from_angle(center, center.distance(orig), offset)
+    }
 }
 
 impl Shape for Ellipse {
-    /// must be [top_left, bottom_right]
+    /// must be [center, top, right]
+    /// see [Ellipse::points]
     fn from_points(points: &[Coord]) -> Self
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
-        debug_assert!(points.len() >= 2);
-        let width = points[1].x - points[0].x;
-        let height = points[1].y - points[0].x;
-        let center = points[0].mid_point(points[1]);
-        Ellipse::new(center, width.max(0) as usize, height.max(0) as usize)
+        debug_assert!(points.len() >= 3);
+        let center = points[0];
+        let top = points[1];
+        let right = points[2];
+        let rotation = center.angle_to(top);
+        let top = Coord::from_angle(center, top.distance(center), 0);
+        let right = Coord::from_angle(center, right.distance(center), 90);
+        Ellipse {
+            center,
+            top,
+            right,
+            rotation,
+        }
     }
 
     fn rebuild(&self, points: &[Coord]) -> Self
-    where
-        Self: Sized,
+        where
+            Self: Sized,
     {
         Ellipse::from_points(points)
     }
 
     fn translate_by(&self, delta: Coord) -> Self {
-        Ellipse::new(self.center + delta, self.width(), self.height())
+        let points: Vec<Coord> = self.points().into_iter().map(|c| c + delta).collect();
+        Ellipse::from_points(&points)
     }
 
     fn move_to(&self, point: Coord) -> Self {
-        Ellipse::new(point, self.width(), self.height())
+        self.move_center_to(point)
     }
 
     fn contains(&self, point: Coord) -> bool {
@@ -87,11 +122,20 @@ impl Shape for Ellipse {
             <= 1
     }
 
-    /// Returns [top_left, bottom_right]
+    /// Returns [center, top, right]
+    ///
+    /// * Center is center point
+    /// * Top is center - height/2, at 0 degrees
+    /// * Right is center + width/2, at 90 degrees
     fn points(&self) -> Vec<Coord> {
         vec![
-            coord!(self.left(), self.top()),
-            coord!(self.right(), self.bottom()),
+            self.center,
+            Coord::from_angle(self.center, self.center.distance(self.top), self.rotation),
+            Coord::from_angle(
+                self.center,
+                self.center.distance(self.right),
+                self.rotation + 90,
+            ),
         ]
     }
 
@@ -102,25 +146,33 @@ impl Shape for Ellipse {
 
     #[inline]
     fn left(&self) -> isize {
-        self.center.x - (self.width() as isize) / 2
+        self.right.x - (self.center.distance(self.right) * 2) as isize
     }
 
     #[inline]
     fn right(&self) -> isize {
-        self.center.x + (self.width() as isize) / 2
+        self.right.x
     }
 
     #[inline]
     fn top(&self) -> isize {
-        self.center.y - (self.height() as isize) / 2
+        self.top.y
     }
 
     #[inline]
     fn bottom(&self) -> isize {
-        self.center.y + (self.height() as isize) / 2
+        self.top.y + (self.center.distance(self.top) * 2) as isize
     }
 
     fn outline_pixels(&self) -> Vec<Coord> {
+        let center = self.center;
+        let degrees = self.rotation;
+        let rotate = if degrees == 0 {
+            Self::no_rotate_point
+        } else {
+            Self::rotate_point
+        };
+
         let center_x = self.center.x;
         let center_y = self.center.y;
         let rx = (self.width() / 2) as f32;
@@ -133,10 +185,10 @@ impl Shape for Ellipse {
         let mut dx = 2.0 * (ry * ry) * (x as f32);
         let mut dy = 2.0 * (rx * rx) * (y as f32);
         while dx < dy {
-            output.insert(coord!(center_x + x, center_y + y));
-            output.insert(coord!(center_x - x, center_y + y));
-            output.insert(coord!(center_x + x, center_y - y));
-            output.insert(coord!(center_x - x, center_y - y));
+            output.insert(rotate(center_x + x, center_y + y, center, degrees));
+            output.insert(rotate(center_x - x, center_y + y, center, degrees));
+            output.insert(rotate(center_x + x, center_y - y, center, degrees));
+            output.insert(rotate(center_x - x, center_y - y, center, degrees));
             if p1 < 0.0 {
                 x += 1;
                 dx = 2.0 * (ry * ry) * (x as f32);
@@ -154,10 +206,10 @@ impl Shape for Ellipse {
             - (rx * rx) * (ry * ry);
 
         while y >= 0 {
-            output.insert(coord!(center_x + x, center_y + y));
-            output.insert(coord!(center_x - x, center_y + y));
-            output.insert(coord!(center_x + x, center_y - y));
-            output.insert(coord!(center_x - x, center_y - y));
+            output.insert(rotate(center_x + x, center_y + y, center, degrees));
+            output.insert(rotate(center_x - x, center_y + y, center, degrees));
+            output.insert(rotate(center_x + x, center_y - y, center, degrees));
+            output.insert(rotate(center_x - x, center_y - y, center, degrees));
             if p2 > 0.0 {
                 y -= 1;
                 dy = 2.0 * (rx * rx) * (y as f32);
@@ -219,6 +271,7 @@ impl Ellipse {
         Line::new((self.center.x, self.center.y), (self.center.x, self.top()))
     }
 
+    /// Returns a circle if the ellipse height and width are the same
     #[must_use]
     pub fn as_circle(&self) -> Option<Circle> {
         if self.width() == self.height() {
@@ -226,5 +279,128 @@ impl Ellipse {
         } else {
             None
         }
+    }
+
+    #[must_use]
+    pub fn as_largest_circle(&self) -> Circle {
+        let radius = self.width().max(self.height());
+        Circle::new(self.center, radius)
+    }
+
+    #[must_use]
+    pub fn as_smallest_circle(&self) -> Circle {
+        let radius = self.width().min(self.height());
+        Circle::new(self.center, radius)
+    }
+
+    #[must_use]
+    pub fn as_polygon(&self) -> Polygon {
+        let x = self.center.x as f64;
+        let y = self.center.y as f64;
+        let w = self.width() as f64 /2.0;
+        let h = self.height() as f64/2.0;
+
+        let segments = (((w + h) / 2.0) * 20.0).sqrt().floor().max(8.0) as usize;
+        let points = discretise_ellipse(x, y, w, h, segments);
+
+        Polygon::from_points(&points).rotate(self.angle())
+    }
+}
+
+fn discretise_ellipse(x: f64, y: f64, a: f64, b: f64, segments: usize) -> Vec<Coord> {
+    let angle_shift = 6.29 / (segments as f64);
+    let mut phi = 0.0;
+    let mut vertices =vec![];
+    for _ in 0..segments {
+        phi += angle_shift;
+        vertices.push(
+            coord!(
+                x + a * phi.cos(),
+                y + b * phi.sin()));
+    }
+
+    return vertices;
+}
+
+#[cfg(test)]
+mod test {
+    use crate::circle::Circle;
+    use crate::ellipse::Ellipse;
+    use crate::Shape;
+
+    #[test]
+    fn check_circle_ellipse() {
+        let ellipse = Ellipse::new((40, 40), 20, 20);
+        let gen_circle = ellipse.as_circle().unwrap();
+        let expected = Circle::new((40, 40), 10);
+        assert_eq!(gen_circle, expected);
+    }
+
+    #[test]
+    fn translate() {
+        let ellipse = Ellipse::new((40, 40), 20, 20);
+        let moved = ellipse.move_center_to(coord!(10, 10));
+        assert_eq!(ellipse.width(), moved.width());
+        assert_eq!(ellipse.height(), moved.height());
+        assert_eq!(ellipse.angle(), moved.angle());
+    }
+
+    #[test]
+    fn to_from_points() {
+        let ellipse = Ellipse::new((100, 100), 30, 60);
+        assert_eq!(ellipse.center, coord!(100,100));
+        assert_eq!(ellipse.top, coord!(100,70));
+        assert_eq!(ellipse.right, coord!(115,100));
+        let points = ellipse.points();
+        assert_eq!(points, coord_vec![(100, 100), (100, 70), (115, 100)]);
+        let gen_ellipse = Ellipse::from_points(&points);
+        assert_eq!(ellipse.width(), gen_ellipse.width());
+        assert_eq!(ellipse.height(), gen_ellipse.height());
+        assert_eq!(ellipse, gen_ellipse);
+    }
+
+    #[test]
+    fn rotation() {
+        let ellipse = Ellipse::new((100, 100), 200, 50);
+        assert_eq!(
+            ellipse.points(),
+            vec![coord!(100, 100), coord!(100, 75), coord!(200, 100)]
+        );
+        assert_eq!(ellipse.center, coord!(100,100));
+        assert_eq!(ellipse.top, coord!(100,75));
+        assert_eq!(ellipse.right, coord!(200,100));
+        assert_eq!(ellipse.rotation, 0);
+        let rotated = ellipse.rotate(90);
+        assert_eq!(
+            rotated.points(),
+            vec![coord!(100, 100), coord!(125, 100), coord!(100, 200)]
+        );
+        assert_eq!(rotated.center, coord!(100,100));
+        assert_eq!(rotated.top, coord!(100,75));
+        assert_eq!(rotated.right, coord!(200,100));
+        assert_eq!(rotated.rotation, 90);
+    }
+
+    #[test]
+    fn move_center() {
+        let ellipse = Ellipse::new((100, 100), 20, 20);
+        let moved = ellipse.move_center_to(coord!(50,50));
+
+        assert_eq!(moved.center, coord!(50,50));
+
+        let ellipse = Ellipse::new((100, 100), 20, 20);
+        let moved = ellipse.move_center_to(coord!(120,50));
+
+        assert_eq!(moved.center, coord!(120,50));
+    }
+
+    #[test]
+    fn move_center_rotated() {
+        let ellipse = Ellipse::new((100, 100), 20, 20).rotate(45);
+        let moved = ellipse.move_center_to(coord!(50,50));
+
+        assert_eq!(ellipse.angle(), 45);
+        assert_eq!(moved.angle(), 45);
+        assert_eq!(moved.center, coord!(50,50));
     }
 }
