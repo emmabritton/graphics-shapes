@@ -1,4 +1,6 @@
-use crate::intersection::shared::{line_circle, polygon_circle, rect_circle, triangle_circle};
+use crate::intersection::shared::{
+    ellipse_circle, line_circle, polygon_circle, rect_circle, triangle_circle,
+};
 use crate::prelude::*;
 
 impl IntersectsShape for Circle {
@@ -20,9 +22,9 @@ impl IntersectsShape for Circle {
         triangle_circle(triangle, self)
     }
 
-    // fn intersects_ellipse(&self, _ellipse: &Ellipse) -> bool {
-    //     todo!()
-    // }
+    fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
+        ellipse_circle(ellipse, self)
+    }
 
     fn intersects_polygon(&self, polygon: &Polygon) -> bool {
         polygon_circle(polygon, self)

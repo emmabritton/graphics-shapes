@@ -321,6 +321,7 @@ macro_rules! float_mul {
 }
 
 impl From<&Coord> for Coord {
+    #[inline]
     fn from(value: &Coord) -> Self {
         *value
     }
@@ -480,6 +481,19 @@ mod test {
             assert_eq!(degree_135, (114, 114).into());
             assert_eq!(degree_225, (86, 114).into());
             assert_eq!(degree_315, (86, 86).into());
+        }
+
+        #[test]
+        fn both_ways() {
+            let center = coord!(60, 60);
+
+            let orig = coord!(90, 60);
+
+            let orig_angle = center.angle_to(orig);
+
+            let rotated = Coord::from_angle(center, center.distance(orig), orig_angle);
+
+            assert_eq!(orig, rotated);
         }
     }
 

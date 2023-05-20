@@ -338,8 +338,13 @@ mod test {
     #[test]
     fn check_moving() {
         let triangle = Triangle::equilateral((50, 50), 10, FlatSide::Left);
+        assert_eq!(triangle.center, coord!(50, 50));
         assert_eq!(triangle.points[0], coord!(45, 45));
         let moved = triangle.move_to(coord!(30, 30));
         assert_eq!(moved.points[0], coord!(30, 30));
+
+        let moved = triangle.move_center_to(coord!(130, 230));
+        assert_eq!(moved.center, coord!(130, 230));
+        assert_eq!(moved.points[0], coord!(125, 225));
     }
 }

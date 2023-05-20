@@ -30,7 +30,7 @@ pub mod circle;
 #[macro_use]
 pub mod coord;
 pub mod contains;
-// pub mod ellipse;
+pub mod ellipse;
 mod general_math;
 pub mod intersection;
 pub mod lerp;
@@ -44,7 +44,7 @@ pub mod prelude {
     pub use crate::circle::Circle;
     pub use crate::contains::*;
     pub use crate::coord::*;
-    // pub use crate::ellipse::Ellipse;
+    pub use crate::ellipse::Ellipse;
     pub use crate::intersection::*;
     pub use crate::line::Line;
     pub use crate::polygon::Polygon;
@@ -246,16 +246,16 @@ pub trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
         if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
             return Some(self.contains_circle(circle));
         }
-        // if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
-        //     return Some(self.contains_ellipse(ellipse));
-        // }
+        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+            return Some(self.contains_ellipse(ellipse));
+        }
         if let Some(shapebox) = other.as_any().downcast_ref::<ShapeBox>() {
             return Some(match shapebox {
                 ShapeBox::Line(line) => self.contains_line(line),
                 ShapeBox::Rect(rect) => self.contains_rect(rect),
                 ShapeBox::Triangle(triangle) => self.contains_triangle(triangle),
                 ShapeBox::Circle(circle) => self.contains_circle(circle),
-                // ShapeBox::Ellipse(ellipse) => self.contains_ellipse(ellipse),
+                ShapeBox::Ellipse(ellipse) => self.contains_ellipse(ellipse),
                 ShapeBox::Polygon(polygon) => self.contains_polygon(polygon),
             });
         }
@@ -283,16 +283,16 @@ pub trait IntersectsContains: Shape + ContainsShape + IntersectsShape + Sized {
         if let Some(circle) = other.as_any().downcast_ref::<Circle>() {
             return Some(self.intersects_circle(circle));
         }
-        // if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
-        //     return Some(self.intersects_ellipse(ellipse));
-        // }
+        if let Some(ellipse) = other.as_any().downcast_ref::<Ellipse>() {
+            return Some(self.intersects_ellipse(ellipse));
+        }
         if let Some(shapebox) = other.as_any().downcast_ref::<ShapeBox>() {
             return Some(match shapebox {
                 ShapeBox::Line(line) => self.intersects_line(line),
                 ShapeBox::Rect(rect) => self.intersects_rect(rect),
                 ShapeBox::Triangle(triangle) => self.intersects_triangle(triangle),
                 ShapeBox::Circle(circle) => self.intersects_circle(circle),
-                // ShapeBox::Ellipse(ellipse) => self.intersects_ellipse(ellipse),
+                ShapeBox::Ellipse(ellipse) => self.intersects_ellipse(ellipse),
                 ShapeBox::Polygon(polygon) => self.intersects_polygon(polygon),
             });
         }

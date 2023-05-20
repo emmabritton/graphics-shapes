@@ -171,14 +171,14 @@ impl Shape for Rect {
 impl Rect {
     /// Create a circle around the center to the closest edge
     #[must_use]
-    pub fn as_smallest_circle(&self) -> Circle {
+    pub fn as_inner_circle(&self) -> Circle {
         let radius = self.width().div(2).min(self.height().div(2));
         Circle::new(self.center(), radius)
     }
 
     /// Create a circle around the center to the farthest edge
     #[must_use]
-    pub fn as_biggest_circle(&self) -> Circle {
+    pub fn as_outer_circle(&self) -> Circle {
         let radius = self.width().div(2).max(self.height().div(2));
         Circle::new(self.center(), radius)
     }
@@ -202,10 +202,10 @@ impl Rect {
         Polygon::new(&[self.top_left, top_right, self.bottom_right, bottom_left])
     }
 
-    // #[must_use]
-    // pub fn as_ellipse(&self) -> Ellipse {
-    //     Ellipse::from_points(&self.points())
-    // }
+    #[must_use]
+    pub fn as_outer_ellipse(&self) -> Ellipse {
+        Ellipse::new(self.center(), self.width(), self.height())
+    }
 
     #[must_use]
     pub fn as_lines(&self) -> [Line; 4] {
@@ -296,5 +296,14 @@ mod test {
             ],
             &points,
         );
+    }
+
+    #[test]
+    fn move_center() {
+        let rect = Rect::new((100, 100), (120, 120));
+        let moved = rect.move_center_to(coord!(50, 50));
+
+        assert_eq!(rect.center(), coord!(110, 110));
+        assert_eq!(moved.center(), coord!(50, 50));
     }
 }

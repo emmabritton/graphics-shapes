@@ -1,4 +1,4 @@
-use crate::intersection::shared::{line_circle, line_polygon, line_rect, line_triangle};
+use crate::intersection::shared::*;
 use crate::intersection::IntersectsShape;
 use crate::prelude::*;
 use std::cmp::Ordering;
@@ -20,9 +20,9 @@ impl IntersectsShape for Line {
         line_triangle(self, triangle)
     }
 
-    // fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
-    //     line_ellipse(self, ellipse)
-    // }
+    fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
+        line_ellipse(self, ellipse)
+    }
 
     fn intersects_polygon(&self, polygon: &Polygon) -> bool {
         line_polygon(self, polygon)

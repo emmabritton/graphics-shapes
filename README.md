@@ -3,17 +3,17 @@
 
 # Shapes for Graphics
 
-Contains code to make and alter lines, rectangles, circles, triangles and polygons.
+Contains code to make and alter various shapes.
 
-Primarily designed to be use with [Buffer Graphics](https://github.com/emmabritton/buffer-graphics-lib) and [Pixels graphics lib](https://github.com/emmabritton/pixel-graphics-lib)
+Primarily designed to be used with [Buffer Graphics](https://github.com/emmabritton/buffer-graphics-lib) and [Pixels graphics lib](https://github.com/emmabritton/pixel-graphics-lib)
 
 ### Usage
 
 Add this line to Cargo.toml
 ```toml
-graphics-shapes = "0.2.1"
+graphics-shapes = "0.2.2"
 # or with both features
-graphics-shapes = {version = "0.2.1", features = ["mint", "serde"] }
+graphics-shapes = {version = "0.2.2", features = ["mint", "serde"] }
 ```
 
 ### Examples 
@@ -28,13 +28,30 @@ let start = coord!(20,130);
 let dist = start.distance((30,130));
 ```
 
-#### Shapes
+### Shapes
 
-All shapes have contains, rotate, scale and translate methods.
+* `Line` 
+* `Rect` 
+* `Triangle`
+* `Circle`
+* `Ellipse`
+* `Polygon`
 
-Each shape also has custom methods, for example, `len` on `Line`, `union` on `Rect`, `angle_type` on `Triangle`, etc
+#### Shared methods
 
-You should use `Rect` or `Triangle` over `Polygon` where possible as their math methods are optimised.
+* `contains` (`Coord` | `Shape`) - Returns true if param is entirely inside 
+* `intersects` (`Shape`) - Returns true if param is partially inside/touching
+* `outline_pixels` - Returns a list of points that can be used to draw a stroke version
+* `filled_pixels` - Returns a list of points that can be used to draw a filled version
+* `rotate`, `scale`, `transform` - Copy and change the shape
+
+#### Per shape methods
+
+All the shapes have methods to create similar sized shapes of different types, e.g. `Circle::to_outer_rect()`, `Rect::to_triangles()`
+
+#### Working with multiple shapes
+
+Each `Shape` is a separate struct so to store them without putting them in a `Box` you can use `ShapeBox` which implements `Shape` and so is fully compatible with other `Shape`s and their methods.
 
 #### Assertions
 
@@ -46,8 +63,12 @@ Both are off by default
 
 #### Serde
 
-`serde` adds `serde::{Serialize, Deserialize}` to `Coord`, `Line`, `Rect`, `Circle`, `Triangle`, `Polygon`
+`serde` adds `serde::{Serialize, Deserialize}` to `Coord`, `Line`, `Rect`, `Circle`, `Triangle`, `Ellipse`, `Polygon`
 
 #### Mint
 
 `mint` adds a `From` impl for `Point2<isize>` to `Coord`
+
+### Known issues
+
+- `Ellipse`s don't render correctly when rotated

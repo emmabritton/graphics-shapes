@@ -61,6 +61,13 @@ impl Shape for Circle {
         Circle::new(point, self.radius)
     }
 
+    fn move_center_to(&self, point: Coord) -> Self
+    where
+        Self: Sized,
+    {
+        Circle::new(point, self.radius)
+    }
+
     fn contains(&self, point: Coord) -> bool {
         let dist = self.center.distance(point);
         dist <= self.radius
@@ -190,8 +197,22 @@ impl Circle {
         Line::new((self.center.x, self.top()), (self.center.x, self.bottom()))
     }
 
-    // #[must_use]
-    // pub fn as_ellipse(&self) -> Ellipse {
-    //     Ellipse::new(self.center, self.radius * 2, self.radius * 2)
-    // }
+    #[must_use]
+    pub fn as_ellipse(&self) -> Ellipse {
+        Ellipse::new(self.center, self.radius * 2, self.radius * 2)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::coord;
+    use crate::prelude::*;
+
+    #[test]
+    fn move_center() {
+        let circle = Circle::new((100, 100), 20);
+        let moved = circle.move_center_to(coord!(50, 50));
+
+        assert_eq!(moved.center, coord!(50, 50));
+    }
 }

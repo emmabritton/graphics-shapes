@@ -1,5 +1,5 @@
 pub mod circle;
-// pub mod ellipse;
+pub mod ellipse;
 pub mod line;
 pub mod polygon;
 pub mod rect;
@@ -45,14 +45,14 @@ pub trait ContainsShape {
         contains_points(self, triangle)
     }
 
-    // /// Returns true if `self` contains `ellipse`
-    // #[must_use]
-    // fn contains_ellipse(&self, ellipse: &Ellipse) -> bool
-    // where
-    //     Self: Shape + Sized,
-    // {
-    //     contains_points(self, ellipse)
-    // }
+    /// Returns true if `self` contains `ellipse`
+    #[must_use]
+    fn contains_ellipse(&self, ellipse: &Ellipse) -> bool
+    where
+        Self: Shape + Sized,
+    {
+        contains_points(self, ellipse)
+    }
 
     /// Returns true if `self` contains `polygon`
     #[must_use]

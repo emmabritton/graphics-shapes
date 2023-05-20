@@ -18,9 +18,9 @@ impl IntersectsShape for Rect {
         lines_lines(&self.as_lines(), &triangle.as_lines())
     }
 
-    // fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
-    //     rect_ellipse(self, ellipse)
-    // }
+    fn intersects_ellipse(&self, ellipse: &Ellipse) -> bool {
+        rect_ellipse(self, ellipse)
+    }
 
     fn intersects_polygon(&self, polygon: &Polygon) -> bool {
         lines_lines(&self.as_lines(), &polygon.as_lines())

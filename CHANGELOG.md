@@ -1,11 +1,15 @@
 # Changelog
 
+### Version 0.2.2
+- Add `Ellipse` and all relevant methods
+- Fix bugs in `move_center_to`
+
 ### Version 0.2.1
 - Remove debug logging
 
 ### Version 0.2.0
 - Serious breaking changes
-  - The `Shape` trait no longer has generics so now `&dyn Shape` can be used but all the generics can to be removed
+  - The `Shape` trait no longer has generics so now `&dyn Shape` can be used
   - Removed `Ellipse` as it's completely broken (hopefully temporarily)
 - Adds
   - `ShapeBox` an enum that can hold any shape and implements the shape traits 
@@ -20,6 +24,8 @@
   - `Circle`
     - `as_outer_rect()` replacing `as_rect()`, which will be removed in 0.3.0
     - `as_inner_rect()`
+  - `Line`
+    - `nearest_point()`
 - Fixes:
   - `Line`:
     - `Vertical`/`Horizontal` type mix up
@@ -27,7 +33,7 @@
   - Make `Line` and `Triangle` serializable
 
 ### Version 0.1.14
-- Add `coord_vec` macro that creats a `Vec<Coord>` from any number of expressions that can converted to Coords using `Coord::from`
+- Add `coord_vec` macro that creates a `Vec<Coord>` from any number of expressions that can converted to Coords using `Coord::from`
 - Rename `outline_points` and `filled_points` to `outline_pixels` and `filled_pixels`
 - Remove duplicate pixels from `*_pixels` methods
 

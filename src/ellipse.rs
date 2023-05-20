@@ -81,8 +81,8 @@ impl Shape for Ellipse {
     /// must be [center, top, right]
     /// see [Ellipse::points]
     fn from_points(points: &[Coord]) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         debug_assert!(points.len() >= 3);
         let center = points[0];
@@ -100,8 +100,8 @@ impl Shape for Ellipse {
     }
 
     fn rebuild(&self, points: &[Coord]) -> Self
-        where
-            Self: Sized,
+    where
+        Self: Sized,
     {
         Ellipse::from_points(points)
     }
@@ -297,8 +297,8 @@ impl Ellipse {
     pub fn as_polygon(&self) -> Polygon {
         let x = self.center.x as f64;
         let y = self.center.y as f64;
-        let w = self.width() as f64 /2.0;
-        let h = self.height() as f64/2.0;
+        let w = self.width() as f64 / 2.0;
+        let h = self.height() as f64 / 2.0;
 
         let segments = (((w + h) / 2.0) * 20.0).sqrt().floor().max(8.0) as usize;
         let points = discretise_ellipse(x, y, w, h, segments);
@@ -310,16 +310,13 @@ impl Ellipse {
 fn discretise_ellipse(x: f64, y: f64, a: f64, b: f64, segments: usize) -> Vec<Coord> {
     let angle_shift = 6.29 / (segments as f64);
     let mut phi = 0.0;
-    let mut vertices =vec![];
+    let mut vertices = vec![];
     for _ in 0..segments {
         phi += angle_shift;
-        vertices.push(
-            coord!(
-                x + a * phi.cos(),
-                y + b * phi.sin()));
+        vertices.push(coord!(x + a * phi.cos(), y + b * phi.sin()));
     }
 
-    return vertices;
+    vertices
 }
 
 #[cfg(test)]
@@ -348,9 +345,9 @@ mod test {
     #[test]
     fn to_from_points() {
         let ellipse = Ellipse::new((100, 100), 30, 60);
-        assert_eq!(ellipse.center, coord!(100,100));
-        assert_eq!(ellipse.top, coord!(100,70));
-        assert_eq!(ellipse.right, coord!(115,100));
+        assert_eq!(ellipse.center, coord!(100, 100));
+        assert_eq!(ellipse.top, coord!(100, 70));
+        assert_eq!(ellipse.right, coord!(115, 100));
         let points = ellipse.points();
         assert_eq!(points, coord_vec![(100, 100), (100, 70), (115, 100)]);
         let gen_ellipse = Ellipse::from_points(&points);
@@ -366,41 +363,41 @@ mod test {
             ellipse.points(),
             vec![coord!(100, 100), coord!(100, 75), coord!(200, 100)]
         );
-        assert_eq!(ellipse.center, coord!(100,100));
-        assert_eq!(ellipse.top, coord!(100,75));
-        assert_eq!(ellipse.right, coord!(200,100));
+        assert_eq!(ellipse.center, coord!(100, 100));
+        assert_eq!(ellipse.top, coord!(100, 75));
+        assert_eq!(ellipse.right, coord!(200, 100));
         assert_eq!(ellipse.rotation, 0);
         let rotated = ellipse.rotate(90);
         assert_eq!(
             rotated.points(),
             vec![coord!(100, 100), coord!(125, 100), coord!(100, 200)]
         );
-        assert_eq!(rotated.center, coord!(100,100));
-        assert_eq!(rotated.top, coord!(100,75));
-        assert_eq!(rotated.right, coord!(200,100));
+        assert_eq!(rotated.center, coord!(100, 100));
+        assert_eq!(rotated.top, coord!(100, 75));
+        assert_eq!(rotated.right, coord!(200, 100));
         assert_eq!(rotated.rotation, 90);
     }
 
     #[test]
     fn move_center() {
         let ellipse = Ellipse::new((100, 100), 20, 20);
-        let moved = ellipse.move_center_to(coord!(50,50));
+        let moved = ellipse.move_center_to(coord!(50, 50));
 
-        assert_eq!(moved.center, coord!(50,50));
+        assert_eq!(moved.center, coord!(50, 50));
 
         let ellipse = Ellipse::new((100, 100), 20, 20);
-        let moved = ellipse.move_center_to(coord!(120,50));
+        let moved = ellipse.move_center_to(coord!(120, 50));
 
-        assert_eq!(moved.center, coord!(120,50));
+        assert_eq!(moved.center, coord!(120, 50));
     }
 
     #[test]
     fn move_center_rotated() {
         let ellipse = Ellipse::new((100, 100), 20, 20).rotate(45);
-        let moved = ellipse.move_center_to(coord!(50,50));
+        let moved = ellipse.move_center_to(coord!(50, 50));
 
         assert_eq!(ellipse.angle(), 45);
         assert_eq!(moved.angle(), 45);
-        assert_eq!(moved.center, coord!(50,50));
+        assert_eq!(moved.center, coord!(50, 50));
     }
 }
