@@ -111,7 +111,7 @@ pub trait Shape: AnyToAny {
     where
         Self: Sized,
     {
-        let diff = (point) - (self.center() - self.points()[0]);
+        let diff = point - self.center();
         self.translate_by(diff)
     }
 
