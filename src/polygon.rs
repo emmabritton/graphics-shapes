@@ -88,7 +88,6 @@ impl Shape for Polygon {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        let point = point;
         let mut j = self.fpoints.len() - 1;
         let mut odd_number_of_nodes = false;
         let fpoint = (point.x as f32, point.y as f32);

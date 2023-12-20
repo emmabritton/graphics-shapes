@@ -122,7 +122,6 @@ impl Shape for Line {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        let point = point;
         match self.line_type {
             LineType::Point => self.start == point,
             LineType::Horizontal => {

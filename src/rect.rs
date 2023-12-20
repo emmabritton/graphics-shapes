@@ -88,7 +88,6 @@ impl Shape for Rect {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        let point = point;
         (self.left()..=self.right()).contains(&point.x)
             && (self.top()..=self.bottom()).contains(&point.y)
     }

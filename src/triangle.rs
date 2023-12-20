@@ -120,7 +120,6 @@ impl Shape for Triangle {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        let point = point;
         let p1 = coord!(
             self.points[1].x - self.points[0].x,
             self.points[1].y - self.points[0].y,

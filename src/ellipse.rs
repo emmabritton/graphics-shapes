@@ -116,7 +116,6 @@ impl Shape for Ellipse {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        let point = point;
         ((point.x - self.center.x) ^ 2) / ((self.width() as isize) ^ 2)
             + ((point.y - self.center.y) ^ 2) / ((self.height() as isize) ^ 2)
             <= 1

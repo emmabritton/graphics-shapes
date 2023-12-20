@@ -82,7 +82,6 @@ pub trait Shape: AnyToAny {
     where
         Self: Sized,
     {
-        let delta = delta;
         let points: Vec<Coord> = self.points().iter().map(|p| *p + delta).collect();
         self.rebuild(&points)
     }
