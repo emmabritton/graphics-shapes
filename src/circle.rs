@@ -5,7 +5,7 @@ use crate::{coord, new_hash_set};
 use serde::{Deserialize, Serialize};
 
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Circle {
     center: Coord,
     radius: usize,

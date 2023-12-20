@@ -1,6 +1,6 @@
 [package]
 name = "graphics-shapes"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
@@ -8,7 +8,7 @@ license-file = "LICENSE"
 repository = "https://github.com/emmabritton/graphics-shapes"
 readme = "README.md"
 keywords = ["shapes", "simple", "graphics"]
-categories = ["math", "graphics"]
+categories = ["mathematics", "graphics"]
 
 [features]
 mint = ["dep:mint"]
@@ -16,5 +16,5 @@ serde = ["dep:serde"]
 
 [dependencies]
 mint = { version = "0.5.9", optional = true }
-serde = { version = "1.0", features = ["derive"], optional = true }
+serde = { version = "1.0.193", features = ["derive"], optional = true }
 fnv = "1.0.7"

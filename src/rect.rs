@@ -10,7 +10,7 @@ use std::ops::Div;
 ///
 /// Must have flat edges, to rotate first convert to [Polygon] using [Rect::as_polygon()]
 #[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Rect {
     top_left: Coord,
     bottom_right: Coord,

@@ -42,7 +42,7 @@ pub mod triangle;
 
 pub mod prelude {
     pub use crate::circle::Circle;
-    pub use crate::contains::*;
+    pub use crate::contains::ContainsShape;
     pub use crate::coord::*;
     pub use crate::ellipse::Ellipse;
     pub use crate::intersection::*;
