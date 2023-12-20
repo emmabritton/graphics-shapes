@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.3
+- Adds `Hash` to all shapes except Ellipse
+
 ### Version 0.2.2
 - Add `Ellipse` and all relevant methods
 - Fix bugs in `move_center_to`
