@@ -9,6 +9,15 @@ pub trait Lerp {
     /// internally the values are cast as f32 and rounded before being returned
     #[must_use]
     fn lerp(self, end: Self, percent: f32) -> Self;
+
+    /// calculate the percent for `point` between `self` and `end`
+    ///
+    /// e.g. 10.inv_lerp(20, 15) returns 0.5 and
+    ///      10.inv_lerp(20, 11) returns 0.1
+    ///
+    /// internally the values are cast as f32 and rounded before being returned
+    #[must_use]
+    fn inv_lerp(self, end: Self, point: Self) -> f32;
 }
 
 /// This method has to be separate and named differently because
@@ -21,6 +30,19 @@ pub fn flerp(start: f32, end: f32, percent: f32) -> f32 {
     start + ((end - start) * percent)
 }
 
+/// Inverse of [flerp]
+#[inline]
+#[must_use]
+pub fn inv_flerp(start: f32, end: f32, point: f32) -> f32 {
+    if point == start {
+        return 0.0;
+    }
+    if point == end {
+        return 1.0;
+    }
+    (point - start) / (end - start)
+}
+
 macro_rules! impl_lerp {
     ($num_type: ty) => {
         impl Lerp for $num_type {
@@ -29,6 +51,14 @@ macro_rules! impl_lerp {
                 let start = self as f32;
                 let end = end as f32;
                 flerp(start, end, percent).round() as $num_type
+            }
+
+            #[inline]
+            fn inv_lerp(self, end: $num_type, point: $num_type) -> f32 {
+                let start = self as f32;
+                let end = end as f32;
+                let point = point as f32;
+                inv_flerp(start, end, point)
             }
         }
     };
@@ -54,6 +84,11 @@ impl Lerp for Coord {
             x: self.x.lerp(end.x, percent),
             y: self.y.lerp(end.y, percent),
         }
+    }
+
+    #[inline]
+    fn inv_lerp(self, end: Coord, point: Coord) -> f32 {
+        (self.x.inv_lerp(end.x, point.x) + self.y.inv_lerp(end.y, point.y)) / 2.0
     }
 }
 
@@ -90,6 +125,32 @@ mod test {
         assert_eq!(5_isize.lerp(-5, 1.), -5);
         assert_eq!(5_isize.lerp(-5, 0.5), 0);
         assert_eq!(5_isize.lerp(-5, 0.), 5);
+
+        assert_eq!(0_isize.inv_lerp(10, 0), 0.);
+        assert_eq!(0_isize.inv_lerp(10, 5), 0.5);
+        assert_eq!(0_isize.inv_lerp(10, 10), 1.);
+        assert_eq!(0_isize.inv_lerp(10, 2), 0.2);
+
+        assert_eq!(5_isize.inv_lerp(10, 5), 0.);
+        assert_eq!(5_isize.inv_lerp(10, 10), 1.);
+
+        assert_eq!(785_isize.inv_lerp(787, 785), 0.);
+        assert_eq!(785_isize.inv_lerp(787, 786), 0.5);
+        assert_eq!(785_isize.inv_lerp(787, 787), 1.);
+
+        assert_eq!(21_isize.inv_lerp(21, 21), 0.);
+
+        assert_eq!(10_isize.inv_lerp(1, 1), 1.);
+        assert_eq!(10_isize.inv_lerp(1, 6), 0.44444445);
+        assert_eq!(10_isize.inv_lerp(1, 10), 0.);
+
+        assert_eq!((-5_isize).inv_lerp(5, 5), 1.);
+        assert_eq!((-5_isize).inv_lerp(5, 0), 0.5);
+        assert_eq!((-5_isize).inv_lerp(5, -5), 0.);
+
+        assert_eq!(5_isize.inv_lerp(-5, -5), 1.);
+        assert_eq!(5_isize.inv_lerp(-5, 0), 0.5);
+        assert_eq!(5_isize.inv_lerp(-5, 5), 0.);
     }
 
     #[test]
@@ -129,5 +190,32 @@ mod test {
 
         assert_eq!(start1.lerp(end1, 2.), Coord { x: 20, y: 20 });
         assert_eq!(start1.lerp(end1, -1.), Coord { x: -10, y: -10 });
+
+        assert_eq!(start1.inv_lerp(end1, Coord { x: 0, y: 0 }), 0.);
+        assert_eq!(start1.inv_lerp(end1, Coord { x: 5, y: 5 }), 0.5);
+        assert_eq!(start1.inv_lerp(end1, Coord { x: 10, y: 10 }), 1.);
+
+        assert_eq!(end1.inv_lerp(start1, Coord { x: 10, y: 10 }), 0.);
+        assert_eq!(end1.inv_lerp(start1, Coord { x: 5, y: 5 }), 0.5);
+        assert_eq!(end1.inv_lerp(start1, Coord { x: 0, y: 0 }), 1.);
+
+        assert_eq!(start2.inv_lerp(end2, Coord { x: -1, y: -1 }), 0.);
+        assert_eq!(start2.inv_lerp(end2, Coord { x: 0, y: 0 }), 0.5);
+        assert_eq!(start2.inv_lerp(end2, Coord { x: 1, y: 1 }), 1.);
+
+        assert_eq!(end2.inv_lerp(start2, Coord { x: 1, y: 1 }), 0.);
+        assert_eq!(end2.inv_lerp(start2, Coord { x: 0, y: 0 }), 0.5);
+        assert_eq!(end2.inv_lerp(start2, Coord { x: -1, y: -1 }), 1.);
+
+        assert_eq!(start3.inv_lerp(end3, Coord { x: 1, y: -1 }), 0.);
+        assert_eq!(start3.inv_lerp(end3, Coord { x: 0, y: 0 }), 0.5);
+        assert_eq!(start3.inv_lerp(end3, Coord { x: -1, y: 1 }), 1.);
+
+        assert_eq!(end3.inv_lerp(start3, Coord { x: -1, y: 1 }), 0.);
+        assert_eq!(end3.inv_lerp(start3, Coord { x: 0, y: 0 }), 0.5);
+        assert_eq!(end3.inv_lerp(start3, Coord { x: 1, y: -1 }), 1.);
+
+        assert_eq!(start1.inv_lerp(end1, Coord { x: 20, y: 20 }), 2.);
+        assert_eq!(start1.inv_lerp(end1, Coord { x: -10, y: -10 }), -1.);
     }
 }
