@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.4
+- Add inv_lerp and inv_flerp
+
 ### Version 0.2.3
 - Adds `Hash` to all shapes except Ellipse
 
