@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.2.5
+- Add `coord!` to prelude
+- Make `scale_points()` and `rotate_points()` public
+
 ### Version 0.2.4
 - Add inv_lerp and inv_flerp
 

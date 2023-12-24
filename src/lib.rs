@@ -31,7 +31,7 @@ pub mod circle;
 pub mod coord;
 pub mod contains;
 pub mod ellipse;
-mod general_math;
+pub mod general_math;
 pub mod intersection;
 pub mod lerp;
 pub mod line;
@@ -43,6 +43,7 @@ pub mod triangle;
 pub mod prelude {
     pub use crate::circle::Circle;
     pub use crate::contains::ContainsShape;
+    pub use crate::coord;
     pub use crate::coord::*;
     pub use crate::ellipse::Ellipse;
     pub use crate::intersection::*;

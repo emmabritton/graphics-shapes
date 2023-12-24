@@ -165,13 +165,13 @@ impl Circle {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
-    /// Rectangle that surrounds the circle
+    /// Rectangle that surrounds the circle (lines touching circle, points outside)
     #[must_use]
     pub fn as_outer_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))
     }
 
-    /// Rectangle that fits inside the circle
+    /// Rectangle that fits inside the circle (points touching circle)
     #[must_use]
     pub fn as_inner_rect(&self) -> Rect {
         let top_left = Coord::from_angle(self.center, self.radius, 315);
