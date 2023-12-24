@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.7
+- Actually Fix prelude/imports
+
 ### Version 0.2.6
 - Fix prelude/imports
 

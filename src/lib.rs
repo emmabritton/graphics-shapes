@@ -53,6 +53,7 @@ pub mod prelude {
     pub use crate::triangle::*;
     pub use crate::IntersectsContains;
     pub use crate::Shape;
+    pub use crate::lerp::*;
 }
 
 pub trait AnyToAny: 'static {

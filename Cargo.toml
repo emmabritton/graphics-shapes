@@ -1,6 +1,6 @@
 [package]
 name = "graphics-shapes"
-version = "0.2.6"
+version = "0.2.7"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
