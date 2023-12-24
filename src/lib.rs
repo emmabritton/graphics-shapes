@@ -41,16 +41,16 @@ pub mod shape_box;
 pub mod triangle;
 
 pub mod prelude {
-    pub use crate::circle::Circle;
+    pub use crate::circle::*;
     pub use crate::contains::ContainsShape;
     pub use crate::coord;
     pub use crate::coord::*;
-    pub use crate::ellipse::Ellipse;
-    pub use crate::intersection::*;
-    pub use crate::line::Line;
-    pub use crate::polygon::Polygon;
-    pub use crate::rect::Rect;
-    pub use crate::triangle::Triangle;
+    pub use crate::ellipse::*;
+    pub use crate::intersection::IntersectsShape;
+    pub use crate::line::*;
+    pub use crate::polygon::*;
+    pub use crate::rect::*;
+    pub use crate::triangle::*;
     pub use crate::IntersectsContains;
     pub use crate::Shape;
 }

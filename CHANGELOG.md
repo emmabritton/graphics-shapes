@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.2.6
+- Fix prelude/imports
+
 ### Version 0.2.5
 - Add `coord!` to prelude
 - Make `scale_points()` and `rotate_points()` public
