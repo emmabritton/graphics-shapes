@@ -2,10 +2,10 @@ use crate::new_hash_set;
 use crate::prelude::*;
 use crate::shape_box::ShapeBox;
 use fnv::FnvHashSet;
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 pub enum TriangleAngleType {
     Acute,
@@ -15,7 +15,7 @@ pub enum TriangleAngleType {
     Other,
 }
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 pub enum TriangleSideType {
     Isosceles,
@@ -23,7 +23,7 @@ pub enum TriangleSideType {
     Equilateral,
 }
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Triangle {
     points: [Coord; 3],

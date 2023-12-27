@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use crate::shape_box::ShapeBox;
 use crate::{coord, new_hash_set};
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Circle {
     center: Coord,

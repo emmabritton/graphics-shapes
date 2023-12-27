@@ -1,12 +1,12 @@
 use crate::coord;
 #[cfg(feature = "mint")]
 use mint::Point2;
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// Represents a 2D point
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Coord {
     pub x: isize,

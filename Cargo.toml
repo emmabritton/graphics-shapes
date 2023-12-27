@@ -1,6 +1,6 @@
 [package]
 name = "graphics-shapes"
-version = "0.2.7"
+version = "0.3.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
@@ -11,6 +11,7 @@ keywords = ["shapes", "simple", "graphics"]
 categories = ["mathematics", "graphics"]
 
 [features]
+default = ["serde"]
 mint = ["dep:mint"]
 serde = ["dep:serde"]
 
@@ -18,3 +19,6 @@ serde = ["dep:serde"]
 mint = { version = "0.5.9", optional = true }
 serde = { version = "1.0.193", features = ["derive"], optional = true }
 fnv = "1.0.7"
+
+[dev-dependencies]
+serde_json = "1.0.108"

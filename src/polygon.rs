@@ -1,9 +1,9 @@
 use crate::prelude::*;
 use crate::shape_box::ShapeBox;
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
     points: Vec<Coord>,

@@ -2,14 +2,14 @@ use crate::general_math::rotate_points;
 use crate::new_hash_set;
 use crate::prelude::*;
 use crate::shape_box::ShapeBox;
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::ops::Div;
 
 /// Rectangle
 ///
 /// Must have flat edges, to rotate first convert to [Polygon] using [Rect::as_polygon()]
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct Rect {
     top_left: Coord,

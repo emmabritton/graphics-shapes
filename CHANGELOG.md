@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.3.0
+- Fix serde feature
+- Make serde feature enabled by default
+
 ### Version 0.2.7
 - Actually Fix prelude/imports
 

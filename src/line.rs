@@ -1,10 +1,10 @@
 use crate::prelude::*;
 use crate::shape_box::ShapeBox;
-#[cfg(feature = "serde_derive")]
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use std::mem::swap;
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash, Copy)]
 pub enum LineType {
     /// Single pixel
@@ -15,7 +15,7 @@ pub enum LineType {
     Angled,
 }
 
-#[cfg_attr(feature = "serde_derive", derive(Serialize, Deserialize))]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Line {
     start: Coord,
