@@ -183,14 +183,21 @@ impl Shape for Triangle {
     }
 }
 
+
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum AnglePosition {
     TopLeft,
     TopRight,
     BottomRight,
     BottomLeft,
+    Top,
+    Right,
+    Bottom,
+    Left
 }
 
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum FlatSide {
     Top,
@@ -215,25 +222,29 @@ impl Triangle {
         ]
     }
 
+    /// Create an Isosceles Right Angle Triangle
     #[must_use]
     pub fn right_angle<P: Into<Coord>>(
         angle_coord: P,
-        width: usize,
-        height: usize,
+        size: usize,
         angle_position: AnglePosition,
     ) -> Triangle {
+        let size = size as isize;
         let point = angle_coord.into();
-        let width = width as isize;
-        let height = height as isize;
-        let left = point.x - width;
-        let right = point.x + width;
-        let top = point.y - height;
-        let bottom = point.y + height;
+        let left = point.x - size;
+        let right = point.x + size;
+        let top = point.y - size;
+        let bottom = point.y + size;
+        let half_size = size / 2;
         match angle_position {
             AnglePosition::TopLeft => Triangle::new(point, (right, point.y), (point.x, bottom)),
             AnglePosition::BottomRight => Triangle::new(point, (left, point.y), (point.x, top)),
             AnglePosition::BottomLeft => Triangle::new(point, (right, point.y), (point.x, top)),
             AnglePosition::TopRight => Triangle::new(point, (left, point.y), (point.x, bottom)),
+            AnglePosition::Top => Triangle::new(point, point + (-half_size, half_size), point+(half_size,half_size)),
+            AnglePosition::Right => Triangle::new(point,  point-(half_size,half_size),point+(-half_size,half_size)),
+            AnglePosition::Bottom => Triangle::new(point, point - (half_size, half_size), point+(half_size,-half_size)),
+            AnglePosition::Left => Triangle::new(point, point+(half_size,-half_size),point+(half_size,half_size)),
         }
     }
 
@@ -297,7 +308,7 @@ mod test {
 
     #[test]
     fn right_angle_triangles() {
-        let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::TopLeft);
+        let triangle = Triangle::right_angle((100, 100), 100, AnglePosition::TopLeft);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),
@@ -306,7 +317,7 @@ mod test {
         assert_eq!(triangle.points[1], (200, 100).into(), "topleft - same y");
         assert_eq!(triangle.points[2], (100, 200).into(), "topleft - same x");
 
-        let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::BottomRight);
+        let triangle = Triangle::right_angle((100, 100), 100, AnglePosition::BottomRight);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),
@@ -315,7 +326,7 @@ mod test {
         assert_eq!(triangle.points[1], (0, 100).into(), "bottomright - same y");
         assert_eq!(triangle.points[2], (100, 0).into(), "bottomright - same x");
 
-        let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::TopRight);
+        let triangle = Triangle::right_angle((100, 100), 100,  AnglePosition::TopRight);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),
@@ -324,7 +335,7 @@ mod test {
         assert_eq!(triangle.points[1], (0, 100).into(), "topright - same y");
         assert_eq!(triangle.points[2], (100, 200).into(), "topright - same x");
 
-        let triangle = Triangle::right_angle((100, 100), 100, 100, AnglePosition::BottomLeft);
+        let triangle = Triangle::right_angle((100, 100), 100,  AnglePosition::BottomLeft);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),

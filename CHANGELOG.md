@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.4.0
+- Add `AnglePosition::Top, Bottom, Left, Right` for `Triangle::right_angle()`
+- Change `Triangle::right_angle()` to only take one size 
+
 ### Version 0.3.0
 - Fix serde feature
 - Make serde feature enabled by default
