@@ -183,7 +183,6 @@ impl Shape for Triangle {
     }
 }
 
-
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum AnglePosition {
@@ -194,7 +193,7 @@ pub enum AnglePosition {
     Top,
     Right,
     Bottom,
-    Left
+    Left,
 }
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
@@ -241,10 +240,26 @@ impl Triangle {
             AnglePosition::BottomRight => Triangle::new(point, (left, point.y), (point.x, top)),
             AnglePosition::BottomLeft => Triangle::new(point, (right, point.y), (point.x, top)),
             AnglePosition::TopRight => Triangle::new(point, (left, point.y), (point.x, bottom)),
-            AnglePosition::Top => Triangle::new(point, point + (-half_size, half_size), point+(half_size,half_size)),
-            AnglePosition::Right => Triangle::new(point,  point-(half_size,half_size),point+(-half_size,half_size)),
-            AnglePosition::Bottom => Triangle::new(point, point - (half_size, half_size), point+(half_size,-half_size)),
-            AnglePosition::Left => Triangle::new(point, point+(half_size,-half_size),point+(half_size,half_size)),
+            AnglePosition::Top => Triangle::new(
+                point,
+                point + (-half_size, half_size),
+                point + (half_size, half_size),
+            ),
+            AnglePosition::Right => Triangle::new(
+                point,
+                point - (half_size, half_size),
+                point + (-half_size, half_size),
+            ),
+            AnglePosition::Bottom => Triangle::new(
+                point,
+                point - (half_size, half_size),
+                point + (half_size, -half_size),
+            ),
+            AnglePosition::Left => Triangle::new(
+                point,
+                point + (half_size, -half_size),
+                point + (half_size, half_size),
+            ),
         }
     }
 
@@ -326,7 +341,7 @@ mod test {
         assert_eq!(triangle.points[1], (0, 100).into(), "bottomright - same y");
         assert_eq!(triangle.points[2], (100, 0).into(), "bottomright - same x");
 
-        let triangle = Triangle::right_angle((100, 100), 100,  AnglePosition::TopRight);
+        let triangle = Triangle::right_angle((100, 100), 100, AnglePosition::TopRight);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),
@@ -335,7 +350,7 @@ mod test {
         assert_eq!(triangle.points[1], (0, 100).into(), "topright - same y");
         assert_eq!(triangle.points[2], (100, 200).into(), "topright - same x");
 
-        let triangle = Triangle::right_angle((100, 100), 100,  AnglePosition::BottomLeft);
+        let triangle = Triangle::right_angle((100, 100), 100, AnglePosition::BottomLeft);
         assert_eq!(
             triangle.points[0],
             (100, 100).into(),
