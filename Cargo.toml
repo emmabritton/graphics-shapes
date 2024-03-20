@@ -1,11 +1,11 @@
 [package]
-name = "graphics-shapes"
+name = "graphics_shapes"
 version = "0.4.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]
 description = "Shapes for graphics"
 license-file = "LICENSE"
-repository = "https://github.com/emmabritton/graphics-shapes"
+repository = "https://github.com/emmabritton/graphics_shapes"
 readme = "README.md"
 keywords = ["shapes", "simple", "graphics"]
 categories = ["mathematics", "graphics"]
