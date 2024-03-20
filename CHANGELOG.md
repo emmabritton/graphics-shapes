@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.4.1
+- Update deps
+
 ### Version 0.4.0
 - Add `AnglePosition::Top, Bottom, Left, Right` for `Triangle::right_angle()`
 - Change `Triangle::right_angle()` to only take one size 

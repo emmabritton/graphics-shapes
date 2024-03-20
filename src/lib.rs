@@ -16,7 +16,6 @@
 //! let dist = start.distance((30,130));
 //!```
 
-#![deny(clippy::all)]
 #![forbid(unsafe_code)]
 
 use crate::coord::Coord;

@@ -241,7 +241,7 @@ impl Polygon {
     }
 }
 
-fn is_convex(points: &Vec<Coord>) -> bool {
+fn is_convex(points: &[Coord]) -> bool {
     let mut prev = 0;
     for i in 0..points.len() {
         let product = (points[(i + 1) % points.len()] - points[i])
