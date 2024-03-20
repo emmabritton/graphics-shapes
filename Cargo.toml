@@ -1,5 +1,5 @@
 [package]
-name = "graphics_shapes"
+name = "graphics-shapes"
 version = "0.4.0"
 edition = "2021"
 authors = ["Emma Britton <emmabritton@pm.me>"]

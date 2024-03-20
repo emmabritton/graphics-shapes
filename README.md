@@ -1,5 +1,5 @@
-[![Crates.io](https://img.shields.io/crates/v/graphics_shapes)](https://crates.io/crates/graphics_shapes "Crates.io version")
-[![Documentation](https://img.shields.io/docsrs/graphics_shapes)](https://docs.rs/graphics_shapes "Documentation")
+[![Crates.io](https://img.shields.io/crates/v/graphics-shapes)](https://crates.io/crates/graphics-shapes "Crates.io version")
+[![Documentation](https://img.shields.io/docsrs/graphics-shapes)](https://docs.rs/graphics-shapes "Documentation")
 
 # Shapes for Graphics
 
@@ -11,9 +11,9 @@ Primarily designed to be used with [Buffer Graphics](https://github.com/emmabrit
 
 Add this line to Cargo.toml
 ```toml
-graphics_shapes = "0.4.0"
+graphics-shapes = "0.4.0"
 # or with both features (serde is enabled by default)
-graphics_shapes = {version = "0.4.0", features = ["mint"] }
+graphics-shapes = {version = "0.4.0", features = ["mint"] }
 ```
 
 ### Examples 
