@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.4.2
+- Update deps
+
 ### Version 0.4.1
 - Update deps
 
