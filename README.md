@@ -11,9 +11,9 @@ Primarily designed to be used with [Buffer Graphics](https://github.com/emmabrit
 
 Add this line to Cargo.toml
 ```toml
-graphics-shapes = "0.4.0"
+graphics-shapes = "0.4.2"
 # or with both features (serde is enabled by default)
-graphics-shapes = {version = "0.4.0", features = ["mint"] }
+graphics-shapes = {version = "0.4.2", features = ["mint"] }
 ```
 
 ### Examples 
