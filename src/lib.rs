@@ -2,7 +2,7 @@
 //!
 //! Provides shapes for simple graphics
 //!
-//! ```
+//! ```rust
 //! # use graphics_shapes::coord::Coord;
 //! # use graphics_shapes::rect::Rect;
 //! # use graphics_shapes::{coord, Shape};
@@ -72,6 +72,7 @@ pub trait Shape: AnyToAny {
     where
         Self: Sized;
 
+    /// Used internally
     #[must_use]
     fn rebuild(&self, points: &[Coord]) -> Self
     where
@@ -219,6 +220,7 @@ pub trait Shape: AnyToAny {
     #[must_use]
     fn filled_pixels(&self) -> Vec<Coord>;
 
+    /// Convert to [ShapeBox], used to store shapes with type (for bulk drawing, etc)
     #[must_use]
     fn to_shape_box(&self) -> ShapeBox;
 }

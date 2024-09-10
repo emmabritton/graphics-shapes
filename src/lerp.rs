@@ -3,8 +3,12 @@ use crate::Coord;
 pub trait Lerp {
     /// calculate the point at `percent` between `self` and `end`
     ///
-    /// e.g. 10.lerp(20, 0.5) returns 15 and
-    ///      10.lerp(20, 0.1) returns 11
+    /// # Usage
+    /// ```rust
+    ///# use graphics_shapes::lerp::Lerp;
+    /// assert_eq!(10.lerp(20, 0.5), 15);
+    /// assert_eq!(10.lerp(20, 0.1), 11);
+    /// ```
     ///
     /// internally the values are cast as f32 and rounded before being returned
     #[must_use]
@@ -12,8 +16,12 @@ pub trait Lerp {
 
     /// calculate the percent for `point` between `self` and `end`
     ///
-    /// e.g. 10.inv_lerp(20, 15) returns 0.5 and
-    ///      10.inv_lerp(20, 11) returns 0.1
+    /// # Usage
+    /// ```rust
+    ///# use graphics_shapes::lerp::Lerp;
+    /// assert_eq!(10.inv_lerp(20, 15), 0.5);
+    /// assert_eq!(10.inv_lerp(20, 11), 0.1);
+    /// ```
     ///
     /// internally the values are cast as f32 and rounded before being returned
     #[must_use]
@@ -24,13 +32,29 @@ pub trait Lerp {
 /// f32::lerp already exists but is unstable
 ///
 /// see [f32::lerp]
+///
+/// calculate the point at `percent` between `self` and `end`
+///
+/// # Usage
+/// ```rust
+///# use graphics_shapes::lerp::flerp;
+/// assert_eq!(flerp(10.0, 20.0, 0.5), 15.0);
+/// assert_eq!(flerp(10.0, 20.0, 0.1), 11.0);
+/// ```
 #[inline]
 #[must_use]
 pub fn flerp(start: f32, end: f32, percent: f32) -> f32 {
     start + ((end - start) * percent)
 }
 
-/// Inverse of [flerp]
+/// calculate the percent for `point` between `self` and `end`
+///
+/// # Usage
+/// ```rust
+///# use graphics_shapes::lerp::inv_flerp;
+/// assert_eq!(inv_flerp(10.0, 20.0, 15.0), 0.5);
+/// assert_eq!(inv_flerp(10.0, 20.0, 11.0), 0.1);
+/// ```
 #[inline]
 #[must_use]
 pub fn inv_flerp(start: f32, end: f32, point: f32) -> f32 {

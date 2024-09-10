@@ -3,6 +3,7 @@ use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+/// Shape with any number of points/line
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, PartialEq)]
 pub struct Polygon {
@@ -45,12 +46,14 @@ impl Polygon {
         &self.fpoints
     }
 
+    /// Returns true if all sides are the same length
     #[inline]
     #[must_use]
     pub fn is_regular(&self) -> bool {
         self.is_regular
     }
 
+    /// Returns the closest corner point to the center
     #[must_use]
     pub fn point_closest_to_center(&self) -> Coord {
         let mut list = self.points.clone();
@@ -58,6 +61,7 @@ impl Polygon {
         list[0]
     }
 
+    /// Returns the furthest corner point to the center
     #[must_use]
     pub fn point_farthest_from_center(&self) -> Coord {
         let mut list = self.points.clone();
@@ -65,6 +69,7 @@ impl Polygon {
         *list.last().unwrap()
     }
 
+    /// Returns true if any sides point inwards
     #[inline]
     #[must_use]
     pub fn is_convex(&self) -> bool {
@@ -204,6 +209,7 @@ impl Polygon {
         }
     }
 
+    /// Creates rect that contains the whole shape
     #[must_use]
     pub fn as_rect(&self) -> Rect {
         Rect::new((self.left(), self.top()), (self.right(), self.bottom()))

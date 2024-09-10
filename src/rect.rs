@@ -182,7 +182,7 @@ impl Rect {
         Circle::new(self.center(), radius)
     }
 
-    /// Create two triangles
+    /// Create two triangles (top left and bottom right right angles)
     #[must_use]
     pub fn as_triangles(&self) -> (Triangle, Triangle) {
         let top_right = coord!(self.right(), self.top());

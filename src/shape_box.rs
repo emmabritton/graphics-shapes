@@ -2,6 +2,10 @@ use crate::prelude::*;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+/// Stores shapes in a generic way so they can be stored in lists, drawn in bulk, etc
+///
+/// Implements all [Shape] methods except `from_points` and passes the call to the underlying shape
+/// but does not support shape specific methods such as [Rect::is_square]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, PartialEq)]
 pub enum ShapeBox {

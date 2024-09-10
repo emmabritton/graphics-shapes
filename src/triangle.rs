@@ -282,7 +282,7 @@ impl Triangle {
     }
 }
 
-pub fn draw_flat_bottom(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
+fn draw_flat_bottom(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
     let slope1 = (points[1].0 - points[0].0) / (points[1].1 - points[0].1);
     let slope2 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
     let mut x1 = points[0].0;
@@ -299,7 +299,7 @@ pub fn draw_flat_bottom(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3])
     }
 }
 
-pub fn draw_flat_top(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
+fn draw_flat_top(output: &mut FnvHashSet<Coord>, points: [(f32, f32); 3]) {
     let slope1 = (points[2].0 - points[0].0) / (points[2].1 - points[0].1);
     let slope2 = (points[2].0 - points[1].0) / (points[2].1 - points[1].1);
     let mut x1 = points[2].0;

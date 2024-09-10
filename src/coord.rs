@@ -6,6 +6,21 @@ use serde::{Deserialize, Serialize};
 use std::ops::{Add, Div, Mul, Neg, Sub};
 
 /// Represents a 2D point
+///
+/// Supports basic math functions
+///
+/// # Usage
+/// ```rust
+///# use std::ops::Neg;
+///# use graphics_shapes::coord;
+///# use graphics_shapes::coord::Coord;
+/// let point = coord!(10,10);
+/// assert_eq!(point + coord!(1.0,1.0), coord!(11, 11));
+/// assert_eq!(point / 2.0, coord!(5,5));
+///
+/// let pos: Coord = (2.0, 3.0).into();
+/// assert_eq!(pos.neg(), coord!(-2, -3));
+/// ```
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 pub struct Coord {
@@ -14,13 +29,14 @@ pub struct Coord {
 }
 
 impl Coord {
+    /// Create a new Coord, use `(<number>, <number>).into()` if not using `isize`
     #[inline]
     #[must_use]
     pub const fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }
 
-    /// 0 is the top of the circle
+    /// Calculate a point on a circle (where 0 is the top of the circle)
     #[must_use]
     pub fn from_angle<P: Into<Coord>>(center: P, distance: usize, degrees: isize) -> Self {
         let center = center.into();
@@ -33,7 +49,7 @@ impl Coord {
 }
 
 impl Coord {
-    /// Distance between self and rhs
+    /// Distance between `self` and `rhs`
     #[must_use]
     pub fn distance<P: Into<Coord>>(self, rhs: P) -> usize {
         let rhs = rhs.into();
@@ -42,6 +58,7 @@ impl Coord {
         x.hypot(y).round().abs() as usize
     }
 
+    /// Returns true if `self`, `b` and `c` are collinear (all on a straight line)
     #[must_use]
     pub fn are_collinear<P1: Into<Coord>, P2: Into<Coord>>(self, b: P1, c: P2) -> bool {
         let b = b.into();
@@ -49,6 +66,7 @@ impl Coord {
         (b.x - self.x) * (c.y - self.y) == (c.x - self.x) * (b.y - self.y)
     }
 
+    /// Returns true if `self` is on a line between `a` and `b`
     #[must_use]
     pub fn is_between<P1: Into<Coord>, P2: Into<Coord>>(self, a: P1, b: P2) -> bool {
         let a = a.into();
@@ -89,12 +107,14 @@ impl Coord {
         self.x * rhs.x + self.y * rhs.y
     }
 
+    /// Returns a perpendicular point
     #[inline]
     #[must_use]
     pub const fn perpendicular(self) -> Coord {
         Coord::new(self.y, -self.x)
     }
 
+    /// Returns absolute copy of point
     #[inline]
     #[must_use]
     pub const fn abs(self) -> Coord {
@@ -327,6 +347,11 @@ impl From<&Coord> for Coord {
     }
 }
 
+/// Create a [Coord]
+/// Accepts
+/// * `Coord`
+/// * \<num>, \<num>
+/// * (\<num>, \<num>)
 #[macro_export]
 macro_rules! coord {
     ($lhs: expr, $rhs: expr,) => {

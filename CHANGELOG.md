@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 0.4.3
+- Update docs
+- Update deps
+
 ### Version 0.4.2
 - Update deps
 

@@ -11,9 +11,9 @@ Primarily designed to be used with [Buffer Graphics](https://github.com/emmabrit
 
 Add this line to Cargo.toml
 ```toml
-graphics-shapes = "0.4.2"
+graphics-shapes = "0.4.3"
 # or with both features (serde is enabled by default)
-graphics-shapes = {version = "0.4.2", features = ["mint"] }
+graphics-shapes = {version = "0.4.3", features = ["mint"] }
 ```
 
 ### Examples 
@@ -71,4 +71,4 @@ This library uses debug assertions for some methods.
 
 ### Known issues
 
-- `Ellipse`s don't render correctly when rotated
+- `Ellipse`s don't plot correctly when rotated
