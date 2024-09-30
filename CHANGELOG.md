@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.4.4
+- Remove exact dep versions
+
 ### Version 0.4.3
 - Update docs
 - Update deps
