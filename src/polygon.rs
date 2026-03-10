@@ -42,7 +42,7 @@ impl Polygon {
 impl Polygon {
     #[inline]
     #[must_use]
-    pub fn fpoints(&self) -> &Vec<(f32, f32)> {
+    pub fn fpoints(&self) -> &[(f32, f32)] {
         &self.fpoints
     }
 
@@ -66,7 +66,7 @@ impl Polygon {
     pub fn point_farthest_from_center(&self) -> Coord {
         let mut list = self.points.clone();
         list.sort_by_key(|p| p.distance(self.center));
-        *list.last().unwrap()
+        *list.last().expect("empty polygon")
     }
 
     /// Returns true if any sides point inwards
@@ -138,7 +138,7 @@ impl Shape for Polygon {
             .collect();
         let y_start = self.top();
         let y_end = self.bottom();
-        for y in y_start..y_end {
+        for y in y_start..=y_end {
             let mut node = vec![];
             let mut node_count = 0;
             let y = y as f32;
@@ -218,7 +218,7 @@ impl Polygon {
     #[must_use]
     pub fn as_lines(&self) -> Vec<Line> {
         let mut lines = vec![];
-        let poly = self.points.clone();
+        let poly = &self.points;
         for i in 0..poly.len() - 1 {
             lines.push(Line::new(poly[i], poly[i + 1]));
         }
@@ -238,7 +238,7 @@ impl Polygon {
             output.push(Triangle::new(coords[0], coords[1], self.center));
         }
         output.push(Triangle::new(
-            *self.points.last().unwrap(),
+            *self.points.last().expect("empty polygon"),
             self.points[0],
             self.center,
         ));

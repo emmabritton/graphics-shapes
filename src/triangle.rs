@@ -102,6 +102,12 @@ impl Triangle {
     pub fn side_type(&self) -> &TriangleSideType {
         &self.side_type
     }
+
+    /// Return center of triangle area
+    /// [center] returns midpoint of bounding area
+    pub fn centroid(&self) -> Coord {
+        (self.points[0] + self.points[1] + self.points[2]) / 3
+    }
 }
 
 impl Shape for Triangle {

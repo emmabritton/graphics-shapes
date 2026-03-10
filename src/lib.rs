@@ -150,25 +150,41 @@ pub trait Shape: AnyToAny {
     /// x of the left most point
     #[must_use]
     fn left(&self) -> isize {
-        self.points().iter().map(|p| p.x).min().unwrap()
+        self.points()
+            .iter()
+            .map(|p| p.x)
+            .min()
+            .expect("shape has no points")
     }
 
     /// x of the right most point
     #[must_use]
     fn right(&self) -> isize {
-        self.points().iter().map(|p| p.x).max().unwrap()
+        self.points()
+            .iter()
+            .map(|p| p.x)
+            .max()
+            .expect("shape has no points")
     }
 
     /// y of the top most point
     #[must_use]
     fn top(&self) -> isize {
-        self.points().iter().map(|p| p.y).min().unwrap()
+        self.points()
+            .iter()
+            .map(|p| p.y)
+            .min()
+            .expect("shape has no points")
     }
 
     /// y of the bottom most point
     #[must_use]
     fn bottom(&self) -> isize {
-        self.points().iter().map(|p| p.y).max().unwrap()
+        self.points()
+            .iter()
+            .map(|p| p.y)
+            .max()
+            .expect("shape has no points")
     }
 
     #[must_use]

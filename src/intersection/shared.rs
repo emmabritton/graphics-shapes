@@ -246,7 +246,7 @@ pub fn ellipse_circle(ellipse: &Ellipse, circle: &Circle) -> bool {
     let x0 = ellipse.center().x as f64;
     let y0 = ellipse.center().y as f64;
     let w = ellipse.width() as f64;
-    let h = ellipse.width() as f64;
+    let h = ellipse.height() as f64;
     let x1 = circle.center().x as f64;
     let y1 = circle.center().y as f64;
     let r = circle.radius() as f64;

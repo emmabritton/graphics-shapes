@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 0.5.0
+- Fix bug in `Ellipse.contains()`
+- Fix bug in `Circle.contains()`
+- Add `Triange.centroid()`
+- Replace `unwrap()`s with `expect()`s
+- Update to latest code standards
+
 ### Version 0.4.4
 - Remove exact dep versions
 

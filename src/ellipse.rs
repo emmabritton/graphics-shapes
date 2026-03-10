@@ -3,6 +3,7 @@ use crate::prelude::*;
 use crate::shape_box::ShapeBox;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+use std::f64::consts::TAU;
 
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -116,9 +117,11 @@ impl Shape for Ellipse {
     }
 
     fn contains(&self, point: Coord) -> bool {
-        ((point.x - self.center.x) ^ 2) / ((self.width() as isize) ^ 2)
-            + ((point.y - self.center.y) ^ 2) / ((self.height() as isize) ^ 2)
-            <= 1
+        let dx = (point.x - self.center.x) as f64;
+        let dy = (point.y - self.center.y) as f64;
+        let w = self.width() as f64 / 2.0;
+        let h = self.height() as f64 / 2.0;
+        (dx * dx) / (w * w) + (dy * dy) / (h * h) <= 1.0
     }
 
     /// Returns [center, top, right]
@@ -307,7 +310,7 @@ impl Ellipse {
 }
 
 fn discretise_ellipse(x: f64, y: f64, a: f64, b: f64, segments: usize) -> Vec<Coord> {
-    let angle_shift = 6.29 / (segments as f64);
+    let angle_shift = TAU / (segments as f64);
     let mut phi = 0.0;
     let mut vertices = vec![];
     for _ in 0..segments {

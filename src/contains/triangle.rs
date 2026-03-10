@@ -3,7 +3,7 @@ use crate::prelude::*;
 impl ContainsShape for Triangle {
     fn contains_circle(&self, circle: &Circle) -> bool {
         if self.contains(circle.center()) {
-            self.intersects_circle(circle)
+            !self.intersects_circle(circle)
         } else {
             false
         }

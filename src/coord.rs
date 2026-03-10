@@ -129,7 +129,6 @@ impl<P: Into<Coord>> Add<P> for Coord {
     type Output = Coord;
 
     #[inline]
-    #[must_use]
     fn add(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -143,7 +142,6 @@ impl Neg for Coord {
     type Output = Coord;
 
     #[inline]
-    #[must_use]
     fn neg(self) -> Self::Output {
         Coord {
             x: -self.x,
@@ -156,7 +154,6 @@ impl<P: Into<Coord>> Sub<P> for Coord {
     type Output = Coord;
 
     #[inline]
-    #[must_use]
     fn sub(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -170,7 +167,6 @@ impl<P: Into<Coord>> Mul<P> for Coord {
     type Output = Coord;
 
     #[inline]
-    #[must_use]
     fn mul(self, rhs: P) -> Self::Output {
         let rhs = rhs.into();
         Coord {
@@ -232,7 +228,7 @@ macro_rules! impl_from_num {
     ($num_type:ty) => {
         impl From<($num_type, $num_type)> for Coord {
             #[inline]
-            #[must_use]
+
             fn from(nums: ($num_type, $num_type)) -> Coord {
                 Coord {
                     x: nums.0 as isize,
@@ -243,7 +239,7 @@ macro_rules! impl_from_num {
 
         impl From<&($num_type, $num_type)> for Coord {
             #[inline]
-            #[must_use]
+
             fn from(nums: &($num_type, $num_type)) -> Coord {
                 Coord {
                     x: nums.0 as isize,
@@ -256,7 +252,7 @@ macro_rules! impl_from_num {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn add(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x + rhs as isize,
@@ -269,7 +265,7 @@ macro_rules! impl_from_num {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn sub(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x - rhs as isize,
@@ -286,7 +282,7 @@ macro_rules! int_mul {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn mul(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x * rhs as isize,
@@ -299,7 +295,7 @@ macro_rules! int_mul {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn div(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: self.x / rhs as isize,
@@ -316,7 +312,7 @@ macro_rules! float_mul {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn mul(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: ((self.x as $num_type) * rhs).ceil() as isize,
@@ -329,7 +325,7 @@ macro_rules! float_mul {
             type Output = Coord;
 
             #[inline]
-            #[must_use]
+
             fn div(self, rhs: $num_type) -> Self::Output {
                 Coord {
                     x: ((self.x as $num_type) / rhs).ceil() as isize,
