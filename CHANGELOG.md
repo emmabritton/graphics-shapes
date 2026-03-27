@@ -1,5 +1,8 @@
 # Changelog
 
+### Version 0.5.1
+- Fix bug in Coord::angle_to
+
 ### Version 0.5.0
 - Fix bug in `Ellipse.contains()`
 - Fix bug in `Circle.contains()`

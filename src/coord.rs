@@ -92,7 +92,7 @@ impl Coord {
         let rhs = rhs.into();
         let x = (rhs.x - self.x) as f32;
         let y = (rhs.y - self.y) as f32;
-        y.atan2(x).to_degrees().round() as isize + 90
+        (y.atan2(x).to_degrees().round() as isize + 90).rem_euclid(360)
     }
 
     #[must_use]
@@ -537,10 +537,12 @@ mod test {
         fn angle() {
             let center = coord!(20, 20);
 
-            assert_eq!(center.angle_to((30, 20)), 90);
-            assert_eq!(center.angle_to((20, 30)), 180);
-            assert_eq!(center.angle_to((10, 20)), 270);
-            assert_eq!(center.angle_to((20, 10)), 0);
+            assert_eq!(center.angle_to((30, 20)), 90); // right
+            assert_eq!(center.angle_to((20, 30)), 180); // down
+            assert_eq!(center.angle_to((10, 20)), 270); // left
+            assert_eq!(center.angle_to((20, 10)), 0); // up
+            assert_eq!(center.angle_to((30, 10)), 45); // upper-right
+            assert_eq!(center.angle_to((10, 10)), 315); // upper-left (was negative)
         }
 
         #[test]
